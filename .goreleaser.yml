@@ -1,6 +1,7 @@
 before:
   hooks:
     - go mod download
+    - go test ./...
 builds:
   - id: hcledit
     binary: bin/hcledit
