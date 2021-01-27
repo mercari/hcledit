@@ -6,6 +6,14 @@ import (
 	"github.com/mercari/hcledit/cmd/hcledit/internal/command"
 )
 
+var (
+	version = "dev"
+)
+
 func main() {
-	os.Exit(command.Run(os.Args[1:]))
+	cmd := command.NewCmdRoot(version)
+
+	if err := cmd.Execute(); err != nil {
+		os.Exit(1)
+	}
 }

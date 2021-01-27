@@ -4,50 +4,53 @@ import (
 	"fmt"
 
 	"github.com/mercari/hcledit"
-	"github.com/posener/complete"
+	"github.com/spf13/cobra"
 )
 
-type readCommand struct{}
-
-func (c *readCommand) Synopsis() string {
-	return "merctl read <QUERY> <FILE>"
+type ReadOptions struct {
+	ValueFormat string
+	ValueOnly   bool
 }
 
-func (c *readCommand) Help() string {
-	return "read"
-}
-
-func (c *readCommand) AutocompleteArgs() complete.Predictor {
-	return complete.PredictNothing
-}
-func (c *readCommand) AutocompleteFlags() complete.Flags {
-	return complete.Flags{}
-}
-
-func (c *readCommand) Run(args []string) int {
-	if len(args) != 2 {
-		fmt.Printf("[ERROR] Invalid arguments\n")
-		return 1
+func NewCmdRead() *cobra.Command {
+	opts := &ReadOptions{}
+	cmd := &cobra.Command{
+		Use:   "read <query> <file>",
+		Short: "Read a value",
+		Long:  `Runs an address query on a hcl file and prints the result`,
+		Args:  cobra.ExactArgs(2),
+		RunE: func(_ *cobra.Command, args []string) error {
+			return runRead(opts, args)
+		},
 	}
 
+	cmd.Flags().BoolVar(&opts.ValueOnly, "value-only", false, "only print the value")
+	cmd.Flags().StringVar(&opts.ValueFormat, "value-format", "%v", "format to print the value as")
+
+	return cmd
+}
+
+func runRead(opts *ReadOptions, args []string) error {
 	query := args[0]
 	filePath := args[1]
 
 	editor, err := hcledit.ReadFile(filePath)
 	if err != nil {
-		fmt.Printf("[ERROR] Failed to read file: %s\n", err)
-		return 1
+		return fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
 	}
 
 	results, err := editor.Read(query)
 	if err != nil {
-		fmt.Printf("[ERROR] Failed to read file: %s\n", err)
-		return 1
+		return fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
 	}
 
 	for key, value := range results {
-		fmt.Println(key, value)
+		if opts.ValueOnly {
+			fmt.Printf(opts.ValueFormat, value)
+		} else {
+			fmt.Println(key, value)
+		}
 	}
 
-	return 0
+	return nil
 }
