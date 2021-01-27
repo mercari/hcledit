@@ -6,8 +6,7 @@ import (
 
 func TestRunRead(t *testing.T) {
 	defaultOpts := &ReadOptions{
-		ValueFormat: "%v",
-		ValueOnly:   true,
+		OutputFormat: "go-template='{{.Value}}'",
 	}
 	fixture := "fixture/file.tf"
 
@@ -34,17 +33,22 @@ func TestRunRead(t *testing.T) {
 		"formatted string": {
 			query: "module.my-module.string_variable",
 			want:  "prefix string suffix",
-			opts:  &ReadOptions{
-				ValueFormat: "prefix %v suffix",
-				ValueOnly: true,
+			opts: &ReadOptions{
+				OutputFormat: "go-template='prefix {{.Value}} suffix'",
 			},
 		},
 		"key and value string": {
 			query: "module.my-module.string_variable",
 			want:  "module.my-module.string_variable string",
-			opts:  &ReadOptions{
-				ValueFormat: "%v",
-				ValueOnly: false,
+			opts: &ReadOptions{
+				OutputFormat: "go-template='{{.Key}} {{.Value}}'",
+			},
+		},
+		"json string": {
+			query: "module.my-module.string_variable",
+			want:  `{"module.my-module.string_variable":"string"}`,
+			opts: &ReadOptions{
+				OutputFormat: "json",
 			},
 		},
 		"array": {

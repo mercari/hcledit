@@ -1,16 +1,17 @@
 package command
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
+	"text/template"
 
 	"github.com/mercari/hcledit"
 	"github.com/spf13/cobra"
 )
 
 type ReadOptions struct {
-	ValueFormat string
-	ValueOnly   bool
+	OutputFormat string
 }
 
 func NewCmdRead() *cobra.Command {
@@ -31,8 +32,7 @@ func NewCmdRead() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().BoolVar(&opts.ValueOnly, "value-only", false, "only print the value")
-	cmd.Flags().StringVar(&opts.ValueFormat, "value-format", "%v", "format to print the value as")
+	cmd.Flags().StringVarP(&opts.OutputFormat, "output-format", "-o", "go-template='{{.Key}} {{.Value}}'", "format to print the value as")
 
 	return cmd
 }
@@ -51,14 +51,40 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 		return "", fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
 	}
 
-	var result strings.Builder
-
-	for key, value := range results {
-		if !opts.ValueOnly {
-			fmt.Fprintf(&result, "%s ", key)
+	if strings.HasPrefix(opts.OutputFormat, "go-template") {
+		split := strings.Split(opts.OutputFormat, "=")
+		if len(split) != 2 {
+			return "", fmt.Errorf(`[ERROR] go-template should be passed as go-template='<TEMPLATE>'`)
 		}
-		fmt.Fprintf(&result, opts.ValueFormat, value)
+
+		templateFormat := strings.Trim(split[1], "'")
+
+		tmpl, err := template.New("output").Parse(templateFormat)
+		if err != nil {
+			return "", err
+		}
+
+		var result strings.Builder
+
+		for key, value := range results {
+			formatted := struct {
+				Key   string
+				Value string
+			}{
+				fmt.Sprintf("%v", key),
+				fmt.Sprintf("%v", value),
+			}
+
+			if err := tmpl.Execute(&result, formatted); err != nil {
+				return result.String(), err
+			}
+		}
+
+		return result.String(), nil
+	} else if opts.OutputFormat == "json" {
+		j, err := json.Marshal(results)
+		return string(j), err
 	}
 
-	return result.String(), nil
+	return "", fmt.Errorf("[ERROR] Invalid output-format")
 }
