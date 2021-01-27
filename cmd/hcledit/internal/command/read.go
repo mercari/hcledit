@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/mercari/hcledit"
 	"github.com/spf13/cobra"
@@ -20,7 +21,13 @@ func NewCmdRead() *cobra.Command {
 		Long:  `Runs an address query on a hcl file and prints the result`,
 		Args:  cobra.ExactArgs(2),
 		RunE: func(_ *cobra.Command, args []string) error {
-			return runRead(opts, args)
+			result, err := runRead(opts, args)
+			if err != nil {
+				return err
+			}
+
+			fmt.Print(result)
+			return nil
 		},
 	}
 
@@ -30,27 +37,29 @@ func NewCmdRead() *cobra.Command {
 	return cmd
 }
 
-func runRead(opts *ReadOptions, args []string) error {
+func runRead(opts *ReadOptions, args []string) (string, error) {
 	query := args[0]
 	filePath := args[1]
 
 	editor, err := hcledit.ReadFile(filePath)
 	if err != nil {
-		return fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
+		return "", fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
 	}
 
 	results, err := editor.Read(query)
 	if err != nil {
-		return fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
+		return "", fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
 	}
+
+	var result strings.Builder
 
 	for key, value := range results {
 		if opts.ValueOnly {
-			fmt.Printf(opts.ValueFormat, value)
+			fmt.Fprintf(&result, opts.ValueFormat, value)
 		} else {
-			fmt.Println(key, value)
+			fmt.Fprintln(&result, key, value)
 		}
 	}
 
-	return nil
+	return result.String(), nil
 }
