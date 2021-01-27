@@ -52,7 +52,7 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 	}
 
 	if strings.HasPrefix(opts.OutputFormat, "go-template") {
-		split := strings.Split(opts.OutputFormat, "=")
+		split := strings.SplitN(opts.OutputFormat, "=", 2)
 		if len(split) != 2 {
 			return "", fmt.Errorf(`[ERROR] go-template should be passed as go-template='<TEMPLATE>'`)
 		}

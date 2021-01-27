@@ -37,6 +37,13 @@ func TestRunRead(t *testing.T) {
 				OutputFormat: "go-template='prefix {{.Value}} suffix'",
 			},
 		},
+		"formatted string with =": {
+			query: "module.my-module.string_variable",
+			want:  "module.my-module.string_variable=string",
+			opts: &ReadOptions{
+				OutputFormat: "go-template='{{.Key}}={{.Value}}'",
+			},
+		},
 		"key and value string": {
 			query: "module.my-module.string_variable",
 			want:  "module.my-module.string_variable string",
