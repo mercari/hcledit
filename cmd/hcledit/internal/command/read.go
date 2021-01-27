@@ -54,11 +54,10 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 	var result strings.Builder
 
 	for key, value := range results {
-		if opts.ValueOnly {
-			fmt.Fprintf(&result, opts.ValueFormat, value)
-		} else {
-			fmt.Fprintln(&result, key, value)
+		if !opts.ValueOnly {
+			fmt.Fprintf(&result, "%s ", key)
 		}
+		fmt.Fprintf(&result, opts.ValueFormat, value)
 	}
 
 	return result.String(), nil

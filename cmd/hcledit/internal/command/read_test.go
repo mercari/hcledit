@@ -41,7 +41,7 @@ func TestRunRead(t *testing.T) {
 		},
 		"key and value string": {
 			query: "module.my-module.string_variable",
-			want:  "module.my-module.string_variable string\n",
+			want:  "module.my-module.string_variable string",
 			opts:  &ReadOptions{
 				ValueFormat: "%v",
 				ValueOnly: false,
