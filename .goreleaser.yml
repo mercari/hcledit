@@ -1,0 +1,34 @@
+before:
+  hooks:
+    - go mod download
+builds:
+  - id: hcledit
+    binary: bin/hcledit
+    dir: cmd/hcledit
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X github.com/mercari/hcledit/cmd/hcledit.version={{.Version}}
+    goos:
+      - linux
+      - windows
+      - darwin
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'      
+      - Merge pull request
+      - Merge branch
