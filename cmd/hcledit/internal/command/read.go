@@ -8,6 +8,7 @@ import (
 
 	"github.com/mercari/hcledit"
 	"github.com/spf13/cobra"
+	yaml "gopkg.in/yaml.v2"
 )
 
 type ReadOptions struct {
@@ -84,6 +85,9 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 	} else if opts.OutputFormat == "json" {
 		j, err := json.Marshal(results)
 		return string(j), err
+	} else if opts.OutputFormat == "yaml" {
+		y, err := yaml.Marshal(results)
+		return string(y), err
 	}
 
 	return "", fmt.Errorf("[ERROR] Invalid output-format")
