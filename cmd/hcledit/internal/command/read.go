@@ -8,7 +8,15 @@ import (
 
 	"github.com/mercari/hcledit"
 	"github.com/spf13/cobra"
+	yaml "gopkg.in/yaml.v2"
 )
+
+var templateFuncs = template.FuncMap{
+	"commaList": func(item string) string {
+		split := strings.Split(strings.Trim(item, `[]`), " ")
+		return fmt.Sprintf("[%s]", strings.Join(split, ", "))
+	},
+}
 
 type ReadOptions struct {
 	OutputFormat string
@@ -59,7 +67,7 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 
 		templateFormat := strings.Trim(split[1], "'")
 
-		tmpl, err := template.New("output").Parse(templateFormat)
+		tmpl, err := template.New("output").Funcs(templateFuncs).Parse(templateFormat)
 		if err != nil {
 			return "", err
 		}
@@ -84,6 +92,9 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 	} else if opts.OutputFormat == "json" {
 		j, err := json.Marshal(results)
 		return string(j), err
+	} else if opts.OutputFormat == "yaml" {
+		y, err := yaml.Marshal(results)
+		return string(y), err
 	}
 
 	return "", fmt.Errorf("[ERROR] Invalid output-format")

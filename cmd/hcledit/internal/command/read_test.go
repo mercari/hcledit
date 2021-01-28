@@ -58,10 +58,35 @@ func TestRunRead(t *testing.T) {
 				OutputFormat: "json",
 			},
 		},
+		"yaml string": {
+			query: "module.my-module.string_variable",
+			want:  "module.my-module.string_variable: string\n",
+			opts: &ReadOptions{
+				OutputFormat: "yaml",
+			},
+		},
 		"array": {
 			query: "module.my-module.array_variable",
 			want:  "[a b c]",
 			opts:  defaultOpts,
+		},
+		"commaList array": {
+			query: "module.my-module.array_variable",
+			want:  "[a, b, c]",
+			opts: &ReadOptions{
+				OutputFormat: "go-template='{{commaList .Value}}'",
+			},
+		},
+		"yaml array": {
+			query: "module.my-module.array_variable",
+			want: `module.my-module.array_variable:
+- a
+- b
+- c
+`,
+			opts: &ReadOptions{
+				OutputFormat: "yaml",
+			},
 		},
 		"map": {
 			query: "module.my-module.map_variable.string_variable",
