@@ -61,9 +61,7 @@ func RawVal(rawString string) *handler.RawVal {
 }
 
 func (h *hclEditImpl) Create(queryStr string, value interface{}, opts ...Option) error {
-	if err := h.reload(); err != nil {
-		return err
-	}
+	defer h.reload()
 
 	opt := &option{}
 	for _, optFunc := range opts {
@@ -90,9 +88,7 @@ func (h *hclEditImpl) Create(queryStr string, value interface{}, opts ...Option)
 }
 
 func (h *hclEditImpl) Read(queryStr string, opts ...Option) (map[string]interface{}, error) {
-	if err := h.reload(); err != nil {
-		return nil, err
-	}
+	defer h.reload()
 
 	opt := &option{}
 	for _, optFunc := range opts {
@@ -117,9 +113,7 @@ func (h *hclEditImpl) Read(queryStr string, opts ...Option) (map[string]interfac
 }
 
 func (h *hclEditImpl) Update(queryStr string, value interface{}, opts ...Option) error {
-	if err := h.reload(); err != nil {
-		return err
-	}
+	defer h.reload()
 
 	opt := &option{}
 	for _, optFunc := range opts {
@@ -156,9 +150,7 @@ func (h *hclEditImpl) Update(queryStr string, value interface{}, opts ...Option)
 }
 
 func (h *hclEditImpl) Delete(queryStr string, opts ...Option) error {
-	if err := h.reload(); err != nil {
-		return err
-	}
+	defer h.reload()
 
 	opt := &option{}
 	for _, optFunc := range opts {
