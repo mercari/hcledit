@@ -70,13 +70,6 @@ func TestRunRead(t *testing.T) {
 			want:  "[a b c]",
 			opts:  defaultOpts,
 		},
-		"commaList array": {
-			query: "module.my-module.array_variable",
-			want:  "[a, b, c]",
-			opts: &ReadOptions{
-				OutputFormat: "go-template='{{commaList .Value}}'",
-			},
-		},
 		"yaml array": {
 			query: "module.my-module.array_variable",
 			want: `module.my-module.array_variable:

@@ -11,13 +11,6 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-var templateFuncs = template.FuncMap{
-	"commaList": func(item string) string {
-		split := strings.Split(strings.Trim(item, `[]`), " ")
-		return fmt.Sprintf("[%s]", strings.Join(split, ", "))
-	},
-}
-
 type ReadOptions struct {
 	OutputFormat string
 }
@@ -67,7 +60,7 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 
 		templateFormat := strings.Trim(split[1], "'")
 
-		tmpl, err := template.New("output").Funcs(templateFuncs).Parse(templateFormat)
+		tmpl, err := template.New("output").Parse(templateFormat)
 		if err != nil {
 			return "", err
 		}
