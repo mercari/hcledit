@@ -54,6 +54,12 @@ func BlockVal(labels ...string) *handler.BlockVal {
 	}
 }
 
+func RawVal(rawString string) *handler.RawVal {
+	return &handler.RawVal{
+		RawString: rawString,
+	}
+}
+
 func (h *hclEditImpl) Create(queryStr string, value interface{}, opts ...Option) error {
 	if err := h.reload(); err != nil {
 		return err

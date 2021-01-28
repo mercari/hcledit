@@ -19,6 +19,8 @@ func New(input interface{}, comment, afterKey string) (Handler, error) {
 	switch v := input.(type) {
 	case *BlockVal:
 		return newBlockHandler(v.Labels)
+	case *RawVal:
+		return newRawHandler(v.RawString)
 	}
 
 	ctyType, err := gocty.ImpliedType(input)

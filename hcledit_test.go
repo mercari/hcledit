@@ -119,6 +119,24 @@ block "label1" "label2" {
 }
 `,
 		},
+
+		"Raw": {
+			input: `
+`,
+			query: "object1",
+			value: hcledit.RawVal(`{
+  object2 = {
+    attribute1 = "str1"
+  }
+}`),
+			want: `
+object1 = {
+  object2 = {
+    attribute1 = "str1"
+  }
+}
+`,
+		},
 	}
 
 	for name, tc := range cases {
