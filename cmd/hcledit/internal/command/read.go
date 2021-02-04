@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/mercari/hcledit"
+	"go.mercari.io/hcledit"
 )
 
 type ReadOptions struct {

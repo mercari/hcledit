@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/mercari/hcledit"
+	"go.mercari.io/hcledit"
 )
 
 type CreateOptions struct {

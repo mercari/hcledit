@@ -1,4 +1,4 @@
-module github.com/mercari/hcledit
+module go.mercari.io/hcledit
 
 go 1.15
 

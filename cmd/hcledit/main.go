@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mercari/hcledit/cmd/hcledit/internal/command"
+	"go.mercari.io/hcledit/cmd/hcledit/internal/command"
 )
 
 var version = "dev"

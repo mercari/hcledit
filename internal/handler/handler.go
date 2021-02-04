@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty/gocty"
 
-	"github.com/mercari/hcledit/internal/ast"
+	"go.mercari.io/hcledit/internal/ast"
 )
 
 type Handler interface {
