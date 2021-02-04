@@ -9,7 +9,7 @@
 
 ## Install
 
-### Library
+### Go package
 
 Use go get:
 
@@ -39,6 +39,7 @@ resource "google_container_node_pool" "nodes1" {
    }
 }
 ```
+### Go package
 
 To create a new attribute,
 
@@ -62,6 +63,68 @@ To delete the existing attribute,
 editor, _ := hcledit.Read(filename)
 editor.Delete("resource.google_container_node_pool.*.node_config.preemptible")
 editor.OverWriteFile()
+```
+
+### Binary
+
+To read an attribute,
+
+```console
+$ hcledit read 'resource.google_container_node_pool.*.node_config.machine_type' /path/to/file.tf
+resource.google_container_node_pool.nodes1.node_config.machine_type e2-medium
+```
+
+To create a new attribute,
+
+```console
+$ hcledit create 'resource.google_container_node_pool.*.node_config.disk_size_gbe' '200' /path/to/file.tf
+```
+
+```diff
+resource "google_container_node_pool" "nodes1" {
+   name = "nodes1"
+
+   node_config {
+     preemptible  = false
+     machine_type = "e2-medium"
++    disk_size_gbe = "200"
+   }
+}
+```
+
+To update the existing attribute,
+
+```console
+$ hcledit update 'resource.google_container_node_pool.*.node_config.machine_type' 'e2-highmem-2' /path/to/file.tf
+```
+
+```diff
+resource "google_container_node_pool" "nodes1" {
+   name = "nodes1"
+
+   node_config {
+     preemptible  = false
+-    machine_type = "e2-medium"
++    machine_type = "e2-highmem-2"
+   }
+}
+```
+
+To delete the existing attribute,
+
+```console
+$ hcledit delete 'resource.google_container_node_pool.*.node_config.machine_type' /path/to/file.tf
+```
+
+```diff
+resource "google_container_node_pool" "nodes1" {
+   name = "nodes1"
+
+   node_config {
+     preemptible  = false
+-    machine_type = "e2-medium"
+   }
+}
 ```
 
 <!-- badge links -->
