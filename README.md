@@ -9,10 +9,20 @@
 
 ## Install
 
+### Library
+
 Use go get:
 
 ```bash
-$ go get -u github.com/mercari/hcledit
+$ go get -u go.mercari.io/hcledit
+```
+
+### Binary
+
+Install binaries via [GitHub Releases][release] or `go get`:
+
+```bash
+$ go get -u go.mercari.io/hcledit/cmd/hcledit
 ```
 
 ## Examples

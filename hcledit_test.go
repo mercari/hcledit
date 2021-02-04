@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/mercari/hcledit"
+	"go.mercari.io/hcledit"
 )
 
 func TestCreate(t *testing.T) {

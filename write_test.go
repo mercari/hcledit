@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mercari/hcledit"
+	"go.mercari.io/hcledit"
 )
 
 func TestWriteFile(t *testing.T) {

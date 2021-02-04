@@ -3,9 +3,9 @@ package walker
 import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 
-	"github.com/mercari/hcledit/internal/ast"
-	"github.com/mercari/hcledit/internal/handler"
-	"github.com/mercari/hcledit/internal/query"
+	"go.mercari.io/hcledit/internal/ast"
+	"go.mercari.io/hcledit/internal/handler"
+	"go.mercari.io/hcledit/internal/query"
 )
 
 type walkMode int

@@ -7,10 +7,10 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty"
 
-	"github.com/mercari/hcledit/internal/converter"
-	"github.com/mercari/hcledit/internal/handler"
-	"github.com/mercari/hcledit/internal/query"
-	"github.com/mercari/hcledit/internal/walker"
+	"go.mercari.io/hcledit/internal/converter"
+	"go.mercari.io/hcledit/internal/handler"
+	"go.mercari.io/hcledit/internal/query"
+	"go.mercari.io/hcledit/internal/walker"
 )
 
 // HCLEditor provides the interface of HCL editing.
