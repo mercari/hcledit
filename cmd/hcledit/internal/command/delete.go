@@ -37,6 +37,4 @@ func runDelete(args []string) error {
 	}
 
 	return editor.OverWriteFile()
-
-	return nil
 }
