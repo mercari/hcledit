@@ -23,11 +23,10 @@ func ParseObject(tokens hclwrite.Tokens) (*Object, error) {
 	}
 
 	var beforeTokens hclwrite.Tokens
-Token:
 	for {
 		next := p.Peek()
 		if next.Type == hclsyntax.TokenEOF {
-			break Token
+			break
 		}
 
 		switch next.Type {
@@ -86,20 +85,18 @@ func partitionObjectTokens(tokens hclwrite.Tokens) (hclwrite.Tokens, hclwrite.To
 
 // readBlock is only used to move peeker to end of the block expression.
 func readBlock(p *peeker) {
-BeforeToken:
 	for {
 		tok := p.Read()
 		if tok.Type == hclsyntax.TokenEOF || tok.Type == hclsyntax.TokenOBrace {
-			break BeforeToken
+			break
 		}
 	}
 
 	var open []hclsyntax.TokenType
-Token:
 	for {
 		next := p.Peek()
 		if next.Type == hclsyntax.TokenEOF {
-			break Token
+			break
 		}
 		switch next.Type {
 		case hclsyntax.TokenOBrace:
@@ -109,7 +106,7 @@ Token:
 			token := p.Read()
 			if len(open) == 0 {
 				p.Read() // eat newline Token
-				break Token
+				break
 			}
 
 			opener := oppositeBracket(token.Type)

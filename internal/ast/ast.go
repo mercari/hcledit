@@ -84,11 +84,10 @@ func getKeysAndNewLines(tokens hclwrite.Tokens) ([]string, map[string]int) {
 		open     []hclsyntax.TokenType
 		newLines int
 	)
-Token:
 	for {
 		next := p.Peek()
 		if next.Type == hclsyntax.TokenEOF {
-			break Token
+			break
 		}
 		switch next.Type {
 		case hclsyntax.TokenIdent:

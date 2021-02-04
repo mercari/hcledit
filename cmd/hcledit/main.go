@@ -6,9 +6,7 @@ import (
 	"github.com/mercari/hcledit/cmd/hcledit/internal/command"
 )
 
-var (
-	version = "dev"
-)
+var version = "dev"
 
 func main() {
 	cmd := command.NewCmdRoot(version)

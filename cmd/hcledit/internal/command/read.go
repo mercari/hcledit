@@ -2,13 +2,15 @@ package command
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"text/template"
 
-	"github.com/mercari/hcledit"
 	"github.com/spf13/cobra"
 	yaml "gopkg.in/yaml.v2"
+
+	"github.com/mercari/hcledit"
 )
 
 type ReadOptions struct {
@@ -44,18 +46,18 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 
 	editor, err := hcledit.ReadFile(filePath)
 	if err != nil {
-		return "", fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
+		return "", fmt.Errorf("failed to read file: %s", err)
 	}
 
 	results, err := editor.Read(query)
 	if err != nil {
-		return "", fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
+		return "", fmt.Errorf("failed to read file: %s", err)
 	}
 
 	if strings.HasPrefix(opts.OutputFormat, "go-template") {
 		split := strings.SplitN(opts.OutputFormat, "=", 2)
 		if len(split) != 2 {
-			return "", fmt.Errorf(`[ERROR] go-template should be passed as go-template='<TEMPLATE>'`)
+			return "", errors.New("go-template should be passed as go-template='<TEMPLATE>'")
 		}
 
 		templateFormat := strings.Trim(split[1], "'")
@@ -90,5 +92,5 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 		return string(y), err
 	}
 
-	return "", fmt.Errorf("[ERROR] Invalid output-format")
+	return "", errors.New("invalid output-format")
 }
