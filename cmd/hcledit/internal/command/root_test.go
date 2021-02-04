@@ -22,3 +22,14 @@ func tempFile(t *testing.T, contents string) string {
 	}
 	return f.Name()
 }
+
+func readFile(t *testing.T, filename string) string {
+	t.Helper()
+
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return string(b)
+}
