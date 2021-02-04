@@ -15,10 +15,13 @@ func NewCmdRoot(version string) *cobra.Command {
 
 	cmd.SetVersionTemplate(version)
 
-	cmd.AddCommand(NewCmdVersion(version))
-	cmd.AddCommand(NewCmdRead())
-	cmd.AddCommand(NewCmdCreate())
-	cmd.AddCommand(NewCmdDelete())
+	cmd.AddCommand(
+		NewCmdVersion(version),
+		NewCmdRead(),
+		NewCmdCreate(),
+		NewCmdUpdate(),
+		NewCmdDelete(),
+	)
 
 	return cmd
 }
