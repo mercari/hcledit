@@ -6,8 +6,6 @@ import (
 
 // Object
 type Object struct {
-	name string
-
 	beforeTokens     hclwrite.Tokens
 	objectAtrributes []*ObjectAtrribute
 	afterTokens      hclwrite.Tokens
@@ -53,7 +51,7 @@ func (o *Object) SetObjectAttributeRaw(name string, exprTokens, commentTokens hc
 	if objAttr != nil {
 		objAttr.exprTokens = exprTokens
 	} else {
-		objAttr := newObjectAttribute(name, exprTokens, commentTokens)
+		objAttr = newObjectAttribute(name, exprTokens, commentTokens)
 		o.objectAtrributes = append(o.objectAtrributes, objAttr)
 	}
 	return objAttr

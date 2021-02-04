@@ -69,5 +69,5 @@ func FromCtyValueToGoValue(ctyVal cty.Value) (interface{}, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("Unsupported cty type")
+	return nil, fmt.Errorf("unsupported cty type")
 }

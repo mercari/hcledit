@@ -28,5 +28,5 @@ func (h *blockHandler) HandleBody(body *hclwrite.Body, name string, _ []string) 
 }
 
 func (h *blockHandler) HandleObject(_ *ast.Object, _ string, _ []string) error {
-	return fmt.Errorf("This function should not be called")
+	return fmt.Errorf("this function should not be called")
 }

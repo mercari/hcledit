@@ -73,13 +73,13 @@ func (h *hclEditImpl) Create(queryStr string, value interface{}, opts ...Option)
 		return err
 	}
 
-	handler, err := handler.New(value, opt.comment, opt.afterKey)
+	hdlr, err := handler.New(value, opt.comment, opt.afterKey)
 	if err != nil {
 		return err
 	}
 
 	w := &walker.Walker{
-		Handler: handler,
+		Handler: hdlr,
 		Mode:    walker.Create,
 	}
 	w.Walk(h.writeFile.Body(), queries, 0, []string{})
@@ -100,11 +100,14 @@ func (h *hclEditImpl) Read(queryStr string, opts ...Option) (map[string]interfac
 		return nil, err
 	}
 
-	results := make(map[string]cty.Value, 0)
-	handler, _ := handler.NewReadHandler(results)
+	results := make(map[string]cty.Value)
+	hdlr, err := handler.NewReadHandler(results)
+	if err != nil {
+		return nil, err
+	}
 
 	w := &walker.Walker{
-		Handler: handler,
+		Handler: hdlr,
 		Mode:    walker.Read,
 	}
 
@@ -135,13 +138,13 @@ func (h *hclEditImpl) Update(queryStr string, value interface{}, opts ...Option)
 		return err
 	}
 
-	handler, err := handler.New(value, opt.comment, opt.afterKey)
+	hdlr, err := handler.New(value, opt.comment, opt.afterKey)
 	if err != nil {
 		return err
 	}
 
 	w := &walker.Walker{
-		Handler: handler,
+		Handler: hdlr,
 		Mode:    walker.Update,
 	}
 
@@ -183,7 +186,7 @@ func (h *hclEditImpl) reload() error {
 }
 
 func convert(original map[string]cty.Value) (map[string]interface{}, error) {
-	results := make(map[string]interface{}, 0)
+	results := make(map[string]interface{})
 	for key, ctyVal := range original {
 		goVal, err := converter.FromCtyValueToGoValue(ctyVal)
 		if err != nil {

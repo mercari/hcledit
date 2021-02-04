@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/mercari/hcledit"
 	"github.com/spf13/cobra"
+
+	"github.com/mercari/hcledit"
 )
 
 type CreateOptions struct {
@@ -38,16 +39,16 @@ func runCreate(opts *CreateOptions, args []string) error {
 
 	editor, err := hcledit.ReadFile(filePath)
 	if err != nil {
-		return fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
+		return fmt.Errorf("failed to read file: %s", err)
 	}
 
 	value, err := convert(valueStr, opts.Type)
 	if err != nil {
-		return fmt.Errorf("[ERROR] Failed to convert input to specific type: %s\n", err)
+		return fmt.Errorf("failed to convert input to specific type: %s", err)
 	}
 
 	if err := editor.Create(query, value); err != nil {
-		return fmt.Errorf("[ERROR] Failed to create: %s\n", err)
+		return fmt.Errorf("failed to create: %s", err)
 	}
 
 	return editor.OverWriteFile()
@@ -64,6 +65,6 @@ func convert(inputStr, typeStr string) (interface{}, error) {
 	case "raw":
 		return hcledit.RawVal(inputStr), nil
 	default:
-		return nil, fmt.Errorf("Unsupported type: %s", typeStr)
+		return nil, fmt.Errorf("unsupported type: %s", typeStr)
 	}
 }

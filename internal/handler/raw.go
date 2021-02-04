@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
+
 	"github.com/mercari/hcledit/internal/ast"
 )
 
@@ -22,7 +23,8 @@ func newRawHandler(rawString string) (Handler, error) {
 				Type:  hclsyntax.TokenComment,
 				Bytes: []byte(rawString),
 			},
-		}}, nil
+		},
+	}, nil
 }
 
 func (h *rawHandler) HandleBody(body *hclwrite.Body, name string, _ []string) error {

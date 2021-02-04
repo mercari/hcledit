@@ -3,8 +3,9 @@ package command
 import (
 	"fmt"
 
-	"github.com/mercari/hcledit"
 	"github.com/spf13/cobra"
+
+	"github.com/mercari/hcledit"
 )
 
 func NewCmdDelete() *cobra.Command {
@@ -29,11 +30,11 @@ func runDelete(args []string) error {
 
 	editor, err := hcledit.ReadFile(filePath)
 	if err != nil {
-		return fmt.Errorf("[ERROR] Failed to read file: %s\n", err)
+		return fmt.Errorf("failed to read file: %s", err)
 	}
 
 	if err := editor.Delete(query); err != nil {
-		return fmt.Errorf("[ERROR] Failed to delete: %s\n", err)
+		return fmt.Errorf("failed to delete: %s", err)
 	}
 
 	return editor.OverWriteFile()

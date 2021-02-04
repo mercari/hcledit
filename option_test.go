@@ -59,6 +59,7 @@ object = {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			editor, err := hcledit.Read(strings.NewReader(tc.input), "")
 			if err != nil {
@@ -154,6 +155,7 @@ block {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			editor, err := hcledit.Read(strings.NewReader(tc.input), "")
 			if err != nil {

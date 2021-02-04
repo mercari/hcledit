@@ -140,6 +140,7 @@ object1 = {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			editor, err := hcledit.Read(strings.NewReader(tc.input), "")
 			if err != nil {
@@ -325,6 +326,7 @@ attribute = [true, false, true]
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			editor, err := hcledit.Read(strings.NewReader(tc.input), "")
 			if err != nil {
@@ -639,6 +641,7 @@ attribute = [true, false, true]
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			editor, err := hcledit.Read(strings.NewReader(tc.input), "")
 			if err != nil {
@@ -805,6 +808,7 @@ object1 = {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			editor, err := hcledit.Read(strings.NewReader(tc.input), "")
 			if err != nil {

@@ -52,7 +52,7 @@ func TestOverWriteFile(t *testing.T) {
 	tempFile := filepath.Join(tempDir, "test.hcl")
 	if err := ioutil.WriteFile(tempFile, []byte(`
 attribute1 = "str1"
-`), 0666); err != nil {
+`), 0600); err != nil {
 		t.Fatal(err)
 	}
 

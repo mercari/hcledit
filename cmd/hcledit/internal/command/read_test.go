@@ -94,10 +94,10 @@ func TestRunRead(t *testing.T) {
 	}
 
 	for name, tc := range cases {
+		tc := tc
 		t.Run(name, func(t *testing.T) {
 			args := []string{tc.query, fixture}
 			got, err := runRead(tc.opts, args)
-
 			if err != nil {
 				t.Fatalf("unexpected err %s", err)
 			}
