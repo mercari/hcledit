@@ -31,6 +31,9 @@ func ReadFile(path string) (HCLEditor, error) {
 	defer f.Close()
 
 	editor, err := Read(f, filepath.Base(path))
+	if err != nil {
+		return nil, err
+	}
 
 	editorImpl := editor.(*hclEditImpl)
 	editorImpl.path = path

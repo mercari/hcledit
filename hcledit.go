@@ -82,9 +82,8 @@ func (h *hclEditImpl) Create(queryStr string, value interface{}, opts ...Option)
 		Handler: hdlr,
 		Mode:    walker.Create,
 	}
-	w.Walk(h.writeFile.Body(), queries, 0, []string{})
 
-	return nil
+	return w.Walk(h.writeFile.Body(), queries, 0, []string{})
 }
 
 func (h *hclEditImpl) Read(queryStr string, opts ...Option) (map[string]interface{}, error) {
@@ -111,7 +110,10 @@ func (h *hclEditImpl) Read(queryStr string, opts ...Option) (map[string]interfac
 		Mode:    walker.Read,
 	}
 
-	w.Walk(h.writeFile.Body(), queries, 0, []string{})
+	if err := w.Walk(h.writeFile.Body(), queries, 0, []string{}); err != nil {
+		return nil, err
+	}
+
 	return convert(results)
 }
 
@@ -148,8 +150,7 @@ func (h *hclEditImpl) Update(queryStr string, value interface{}, opts ...Option)
 		Mode:    walker.Update,
 	}
 
-	w.Walk(h.writeFile.Body(), queries, 0, []string{})
-	return nil
+	return w.Walk(h.writeFile.Body(), queries, 0, []string{})
 }
 
 func (h *hclEditImpl) Delete(queryStr string, opts ...Option) error {
@@ -169,8 +170,7 @@ func (h *hclEditImpl) Delete(queryStr string, opts ...Option) error {
 		Mode: walker.Delete,
 	}
 
-	w.Walk(h.writeFile.Body(), queries, 0, []string{})
-	return nil
+	return w.Walk(h.writeFile.Body(), queries, 0, []string{})
 }
 
 // reload re-parse the HCL file. Some operation causes like `WithAfter` modifies Body token structure

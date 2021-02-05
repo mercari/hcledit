@@ -22,12 +22,19 @@ type Walker struct {
 	Mode    walkMode
 }
 
-func (w *Walker) Walk(body *hclwrite.Body, queries []query.Query, index int, keytrail []string) {
-	w.walkAttribute(body, queries, index, keytrail)
-	w.walkBlock(body, queries, index, keytrail)
+func (w *Walker) Walk(body *hclwrite.Body, queries []query.Query, index int, keytrail []string) error {
+	if err := w.walkAttribute(body, queries, index, keytrail); err != nil {
+		return err
+	}
+
+	if err := w.walkBlock(body, queries, index, keytrail); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (w *Walker) walkAttribute(body *hclwrite.Body, queries []query.Query, index int, keytrail []string) {
+func (w *Walker) walkAttribute(body *hclwrite.Body, queries []query.Query, index int, keytrail []string) error {
 	var handled bool
 	for key := range body.Attributes() {
 		if queries[index].Match(key) {
@@ -40,7 +47,9 @@ func (w *Walker) walkAttribute(body *hclwrite.Body, queries []query.Query, index
 				case Delete:
 					body.RemoveAttribute(key)
 				default:
-					w.Handler.HandleBody(body, key, keytrail)
+					if err := w.Handler.HandleBody(body, key, keytrail); err != nil {
+						return err
+					}
 				}
 				handled = true
 			} else {
@@ -56,7 +65,10 @@ func (w *Walker) walkAttribute(body *hclwrite.Body, queries []query.Query, index
 					continue
 				}
 
-				handled = w.walkObject(obj, queries, nestedIndex, keytrail)
+				handled, err = w.walkObject(obj, queries, nestedIndex, keytrail)
+				if err != nil {
+					return err
+				}
 				if !handled {
 					continue
 				}
@@ -78,12 +90,16 @@ func (w *Walker) walkAttribute(body *hclwrite.Body, queries []query.Query, index
 	if index == len(queries)-1 && !handled && w.Mode == Create {
 		if key := queries[index].Key(); key != "*" {
 			keytrail = append(keytrail, key)
-			w.Handler.HandleBody(body, key, keytrail)
+			if err := w.Handler.HandleBody(body, key, keytrail); err != nil {
+				return err
+			}
 		}
 	}
+
+	return nil
 }
 
-func (w *Walker) walkBlock(body *hclwrite.Body, queries []query.Query, index int, keytrail []string) {
+func (w *Walker) walkBlock(body *hclwrite.Body, queries []query.Query, index int, keytrail []string) error {
 	for _, block := range body.Blocks() {
 		blockIndex := index
 		if !queries[blockIndex].Match(block.Type()) {
@@ -111,7 +127,9 @@ func (w *Walker) walkBlock(body *hclwrite.Body, queries []query.Query, index int
 
 		if blockIndex <= len(queries)-1 {
 			// This means the query indicates more room to go deeper.
-			w.Walk(block.Body(), queries, blockIndex, keytrail)
+			if err := w.Walk(block.Body(), queries, blockIndex, keytrail); err != nil {
+				return err
+			}
 		} else if index == len(queries)-1 {
 			// This means it reaches to the end of queries where
 			// we should execute the handler.
@@ -119,13 +137,17 @@ func (w *Walker) walkBlock(body *hclwrite.Body, queries []query.Query, index int
 			case Delete:
 				body.RemoveBlock(block)
 			case Update:
-				w.Handler.HandleBody(body, "", keytrail)
+				if err := w.Handler.HandleBody(body, "", keytrail); err != nil {
+					return err
+				}
 			}
 		}
 	}
+
+	return nil
 }
 
-func (w *Walker) walkObject(obj *ast.Object, queries []query.Query, index int, keytrail []string) bool {
+func (w *Walker) walkObject(obj *ast.Object, queries []query.Query, index int, keytrail []string) (bool, error) {
 	var handled bool
 	for key := range obj.ObjectAttributes() {
 		if queries[index].Match(key) {
@@ -138,7 +160,9 @@ func (w *Walker) walkObject(obj *ast.Object, queries []query.Query, index int, k
 				case Delete:
 					obj.DeleteObjectAttribute(key)
 				default:
-					w.Handler.HandleObject(obj, key, keytrail)
+					if err := w.Handler.HandleObject(obj, key, keytrail); err != nil {
+						return false, err
+					}
 				}
 				handled = true
 			} else {
@@ -155,7 +179,10 @@ func (w *Walker) walkObject(obj *ast.Object, queries []query.Query, index int, k
 					continue
 				}
 
-				handled = w.walkObject(nestedObj, queries, nestedIndex, keytrail)
+				handled, err = w.walkObject(nestedObj, queries, nestedIndex, keytrail)
+				if err != nil {
+					return false, err
+				}
 				if !handled {
 					continue
 				}
@@ -173,10 +200,12 @@ func (w *Walker) walkObject(obj *ast.Object, queries []query.Query, index int, k
 	if index == len(queries)-1 && !handled && w.Mode == Create {
 		if key := queries[index].Key(); key != "*" {
 			keytrail = append(keytrail, key)
-			w.Handler.HandleObject(obj, key, keytrail)
+			if err := w.Handler.HandleObject(obj, key, keytrail); err != nil {
+				return false, err
+			}
 			handled = true
 		}
 	}
 
-	return handled
+	return handled, nil
 }
