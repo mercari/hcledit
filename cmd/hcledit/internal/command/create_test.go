@@ -27,8 +27,8 @@ func TestRunCreate(t *testing.T) {
 		},
 		"WithOptionWithAfter": {
 			opts: &CreateOptions{
-				Type:      "string",
-				WithAfter: "preemptible",
+				Type:  "string",
+				After: "preemptible",
 			},
 			want: `resource "google_container_node_pool" "nodes1" {
   node_config {

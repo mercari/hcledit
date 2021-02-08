@@ -10,8 +10,8 @@ import (
 )
 
 type CreateOptions struct {
-	Type      string
-	WithAfter string
+	Type  string
+	After string
 }
 
 func NewCmdCreate() *cobra.Command {
@@ -30,7 +30,7 @@ func NewCmdCreate() *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&opts.Type, "type", "t", "string", "Type of the value")
-	cmd.Flags().StringVar(&opts.WithAfter, "with-after", "string", "Field key which before the value will be created")
+	cmd.Flags().StringVarP(&opts.After, "after", "a", "", "Field key which before the value will be created")
 	return cmd
 }
 
@@ -49,7 +49,7 @@ func runCreate(opts *CreateOptions, args []string) error {
 		return fmt.Errorf("failed to convert input to specific type: %s", err)
 	}
 
-	if err := editor.Create(query, value, hcledit.WithAfter(opts.WithAfter)); err != nil {
+	if err := editor.Create(query, value, hcledit.WithAfter(opts.After)); err != nil {
 		return fmt.Errorf("failed to create: %s", err)
 	}
 
