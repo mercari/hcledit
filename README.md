@@ -11,7 +11,7 @@
 
 ### Go package
 
-Use go get:
+`go get`:
 
 ```bash
 $ go get -u go.mercari.io/hcledit
@@ -19,7 +19,16 @@ $ go get -u go.mercari.io/hcledit
 
 ### Binary
 
-Install binaries via [GitHub Releases][release] or `go get`:
+Install binaries via [GitHub Releases][release] or below:
+
+Homebrew:
+
+```bash
+$ brew tap mercari/hcledit https://github.com/mercari/hcledit
+$ brew install hcledit
+```
+
+`go get`:
 
 ```bash
 $ go get -u go.mercari.io/hcledit/cmd/hcledit
