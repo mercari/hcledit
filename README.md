@@ -2,6 +2,7 @@
 
 [![workflow-test][workflow-test-badge]][workflow-test]
 [![release][release-badge]][release]
+[![docker][docker-badge]][docker]
 [![pkg.go.dev][pkg.go.dev-badge]][pkg.go.dev]
 [![license][license-badge]][license]
 
@@ -32,6 +33,12 @@ $ brew install hcledit
 
 ```bash
 $ go get -u go.mercari.io/hcledit/cmd/hcledit
+```
+
+Docker:
+
+```bash
+$ docker run --rm -it mercari/hcledit hcledit
 ```
 
 ## Examples
@@ -143,6 +150,9 @@ resource "google_container_node_pool" "nodes1" {
 
 [release]: https://github.com/mercari/hcledit/releases
 [release-badge]: https://img.shields.io/github/v/release/mercari/hcledit?style=for-the-badge&logo=github
+
+[docker]: https://hub.docker.com/r/mercari/hcledit
+[docker-badge]: https://img.shields.io/docker/v/mercari/hcledit?label=docker&sort=semver&style=for-the-badge&logo=docker
 
 [pkg.go.dev]: https://pkg.go.dev/go.mercari.io/hcledit
 [pkg.go.dev-badge]: http://bit.ly/pkg-go-dev-badge
