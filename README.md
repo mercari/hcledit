@@ -69,7 +69,7 @@ To update the existing attribute,
 
 ```go
 editor, _ := hcledit.Read(filename)
-editor.Update("resource.google_container_node_pool.*.node_config.machine_type", "COS")
+editor.Update("resource.google_container_node_pool.*.node_config.image_type", "COS")
 editor.OverWriteFile()
 ```
 
@@ -93,7 +93,7 @@ resource.google_container_node_pool.nodes1.node_config.machine_type e2-medium
 To create a new attribute,
 
 ```console
-$ hcledit create 'resource.google_container_node_pool.*.node_config.disk_size_gbe' '200' /path/to/file.tf
+$ hcledit create 'resource.google_container_node_pool.*.node_config.image_type' 'COS' /path/to/file.tf
 ```
 
 ```diff
@@ -103,7 +103,7 @@ resource "google_container_node_pool" "nodes1" {
    node_config {
      preemptible  = false
      machine_type = "e2-medium"
-+    disk_size_gbe = "200"
++    image_type   = "COS"
    }
 }
 ```
