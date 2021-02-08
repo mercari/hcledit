@@ -33,3 +33,10 @@ changelog:
       - '^test:'      
       - Merge pull request
       - Merge branch
+brews:
+  - tap:
+      owner: mercari
+      name: hcledit
+    folder: Formula
+    homepage: https://github.com/mercari/hcledit
+    description: CLI to edit HCL configurations
