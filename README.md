@@ -69,7 +69,7 @@ To update the existing attribute,
 
 ```go
 editor, _ := hcledit.Read(filename)
-editor.Update("resource.google_container_node_pool.*.node_config.image_type", "COS")
+editor.Update("resource.google_container_node_pool.*.node_config.machine_type", "e2-highmem-2")
 editor.OverWriteFile()
 ```
 
