@@ -12,10 +12,8 @@ func TestRunCreate(t *testing.T) {
 		want    string
 		wantErr bool
 	}{
-		"WithoutOptionWithAfter": {
-			opts: &CreateOptions{
-				Type: "string",
-			},
+		"WithoutAdditionalOptions": {
+			opts: &CreateOptions{},
 			want: `resource "google_container_node_pool" "nodes1" {
   node_config {
     preemptible  = false
@@ -39,6 +37,20 @@ func TestRunCreate(t *testing.T) {
 }
 `,
 		},
+		"WithOptionComment": {
+			opts: &CreateOptions{
+				Comment: "// TODO: Testing",
+			},
+			want: `resource "google_container_node_pool" "nodes1" {
+  node_config {
+    preemptible  = false
+    machine_type = "e2-medium"
+    // TODO: Testing
+    disk_size_gb = "100"
+  }
+}
+`,
+		},
 	}
 
 	for name, tc := range cases {
@@ -52,6 +64,7 @@ func TestRunCreate(t *testing.T) {
 }
 `)
 
+			tc.opts.Type = "string" // ensure default value
 			if err := runCreate(tc.opts, []string{
 				"resource.google_container_node_pool.nodes1.node_config.disk_size_gb",
 				"100",
