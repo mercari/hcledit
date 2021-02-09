@@ -3,7 +3,8 @@ name: Docker
 on:
   push:
     tags:
-      - '*'
+      # TODO(micnncim): Update this tag filter when making this repository public
+      - '_stable'
 
 jobs:
   docker:
