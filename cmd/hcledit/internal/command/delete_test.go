@@ -2,8 +2,11 @@ package command
 
 import (
 	"io/ioutil"
-	"log"
+	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestRunDelete(t *testing.T) {
@@ -26,7 +29,7 @@ resource "google_container_node_pool" "nodes1" {
 
 	got, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
 	want := `
@@ -36,7 +39,11 @@ resource "google_container_node_pool" "nodes1" {
   }
 }
 `
-	if string(got) != want {
-		t.Fatalf("\ngot  %s\nwant %s", got, want)
+	diff := cmp.Diff(want, string(got), cmpopts.AcyclicTransformer("multiline", func(s string) []string {
+		return strings.Split(s, "\n")
+	}))
+
+	if diff != "" {
+		t.Fatalf("Delete mismatch (-want +got):\n%s", diff)
 	}
 }

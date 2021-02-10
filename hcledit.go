@@ -1,3 +1,8 @@
+// Package hcledit is a Go package to edit HCL configurations.
+// Basically, this is just a wrapper of hclwrite package which provides
+// low-level features of generating HCL configurations. But hcledit allows you
+// to access HCL attribute or block by jq-like query and do various
+// manipulations.
 package hcledit
 
 import (
@@ -13,54 +18,34 @@ import (
 	"go.mercari.io/hcledit/internal/walker"
 )
 
-// HCLEditor provides the interface of HCL editing.
-type HCLEditor interface {
-	// Create creates attributes and blocks matched with the given query
-	// with the given value. The value can be any type and it's transformed
-	// into HCL type inside.
-	Create(query string, value interface{}, opts ...Option) error
-
-	// Read returns attributes and blocks matched with the given query.
-	// The results are map of mached key and its value.
-	//
-	// It returns error if it does not match any key.
-	Read(query string, opts ...Option) (map[string]interface{}, error)
-
-	// Update replaces attributes and blocks which matched with its key
-	// and given query with the given value. The value can be any type
-	// and it's transformed into HCL type inside.
-	//
-	// By default, it returns error if the does not matched with any key.
-	// You must create value before update.
-	Update(query string, value interface{}, opts ...Option) error
-
-	// Delete deletes attributes and blocks matched with the given query.
-	//
-	// It returns error if it does not match any key.
-	Delete(query string, opts ...Option) error
-
-	Writer
-}
-
-type hclEditImpl struct {
+// HCLEditor implements an editor of HCL configuration.
+type HCLEditor struct {
 	path      string
 	filename  string
 	writeFile *hclwrite.File
 }
 
+// TODO(slewiskelly): Should these be exported?
+// Users of this package are not allowed to import
+// "go.mercari.io/hcledit/internal/handler" due to visibility of internal
+// packages.
 func BlockVal(labels ...string) *handler.BlockVal {
 	return &handler.BlockVal{
 		Labels: labels,
 	}
 }
 
+// TODO(slewiskelly): As above.
 func RawVal(rawString string) *handler.RawVal {
 	return &handler.RawVal{
 		RawString: rawString,
 	}
 }
 
-func (h *hclEditImpl) Create(queryStr string, value interface{}, opts ...Option) error {
+// Create creates attributes and blocks matched with the given query
+// with the given value. The value can be any type and it's transformed
+// into HCL type inside.
+func (h *HCLEditor) Create(queryStr string, value interface{}, opts ...Option) error {
 	defer h.reload()
 
 	opt := &option{}
@@ -86,7 +71,11 @@ func (h *hclEditImpl) Create(queryStr string, value interface{}, opts ...Option)
 	return w.Walk(h.writeFile.Body(), queries, 0, []string{})
 }
 
-func (h *hclEditImpl) Read(queryStr string, opts ...Option) (map[string]interface{}, error) {
+// Read returns attributes and blocks matched with the given query.
+// The results are map of mached key and its value.
+//
+// It returns error if it does not match any key.
+func (h *HCLEditor) Read(queryStr string, opts ...Option) (map[string]interface{}, error) {
 	defer h.reload()
 
 	opt := &option{}
@@ -117,7 +106,13 @@ func (h *hclEditImpl) Read(queryStr string, opts ...Option) (map[string]interfac
 	return convert(results)
 }
 
-func (h *hclEditImpl) Update(queryStr string, value interface{}, opts ...Option) error {
+// Update replaces attributes and blocks which matched with its key
+// and given query with the given value. The value can be any type
+// and it's transformed into HCL type inside.
+//
+// By default, it returns error if the does not matched with any key.
+// You must create value before update.
+func (h *HCLEditor) Update(queryStr string, value interface{}, opts ...Option) error {
 	defer h.reload()
 
 	opt := &option{}
@@ -153,7 +148,10 @@ func (h *hclEditImpl) Update(queryStr string, value interface{}, opts ...Option)
 	return w.Walk(h.writeFile.Body(), queries, 0, []string{})
 }
 
-func (h *hclEditImpl) Delete(queryStr string, opts ...Option) error {
+// Delete deletes attributes and blocks matched with the given query.
+//
+// It returns error if it does not match any key.
+func (h *HCLEditor) Delete(queryStr string, opts ...Option) error {
 	defer h.reload()
 
 	opt := &option{}
@@ -176,7 +174,7 @@ func (h *hclEditImpl) Delete(queryStr string, opts ...Option) error {
 // reload re-parse the HCL file. Some operation causes like `WithAfter` modifies Body token structure
 // drastically (it re-construct it from scratch...) and, because of it, some operation will not work
 // properly after it
-func (h *hclEditImpl) reload() error {
+func (h *HCLEditor) reload() error {
 	writeFile, diags := hclwrite.ParseConfig(h.Bytes(), h.filename, hcl.Pos{Line: 1, Column: 1})
 	if diags.HasErrors() {
 		return diags

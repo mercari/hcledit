@@ -9,25 +9,19 @@ import (
 )
 
 func NewCmdUpdate() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:   "update <query> <value> <file>",
 		Short: "Update the given field with a value",
 		Long:  `Runs an address query on a hcl file and update the given field with a value.`,
 		Args:  cobra.ExactArgs(3),
 		RunE: func(_ *cobra.Command, args []string) error {
-			if err := runUpdate(args); err != nil {
-				return err
-			}
-			return nil
+			return runUpdate(args)
 		},
 	}
-	return cmd
 }
 
 func runUpdate(args []string) error {
-	query := args[0]
-	value := args[1]
-	filePath := args[2]
+	query, value, filePath := args[0], args[1], args[2]
 
 	editor, err := hcledit.ReadFile(filePath)
 	if err != nil {

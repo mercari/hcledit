@@ -7,20 +7,9 @@ import (
 	"path/filepath"
 )
 
-type Writer interface {
-	WriteFile(path string) error
-
-	Write(w io.Writer) error
-
-	OverWriteFile() error
-
-	// Bytes returns a buffer containing the source code resulting from the
-	// tokens underlying the receiving file. If any updates have been made via
-	// the AST API, these will be reflected in the result.
-	Bytes() []byte
-}
-
-func (h *hclEditImpl) WriteFile(path string) error {
+// WriteFile writes the new contents to the given file, creating it if it does
+// not exist.
+func (h *HCLEditor) WriteFile(path string) error {
 	path, err := filepath.Abs(path)
 	if err != nil {
 		return err
@@ -35,12 +24,15 @@ func (h *hclEditImpl) WriteFile(path string) error {
 	return h.Write(f)
 }
 
-func (h *hclEditImpl) Write(w io.Writer) error {
+// Write writes the new contents to the given io.Writer.
+func (h *HCLEditor) Write(w io.Writer) error {
 	_, err := fmt.Fprintf(w, "%s", h.Bytes())
 	return err
 }
 
-func (h *hclEditImpl) OverWriteFile() error {
+// OverWriteFile writes the new contents to the file that has first been read
+// via ReadFile.
+func (h *HCLEditor) OverWriteFile() error {
 	if h.path == "" {
 		return fmt.Errorf("OverWriteFile can be used only when you create editor via ReadFile()")
 	}
@@ -48,6 +40,9 @@ func (h *hclEditImpl) OverWriteFile() error {
 	return h.WriteFile(h.path)
 }
 
-func (h *hclEditImpl) Bytes() []byte {
+// Bytes returns a buffer containing the source code resulting from the
+// tokens underlying the receiving file. If any updates have been made via
+// the AST API, these will be reflected in the result.
+func (h *HCLEditor) Bytes() []byte {
 	return h.writeFile.Bytes()
 }

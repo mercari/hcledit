@@ -1,3 +1,5 @@
+// The hcledit tool provides a CRUD interface to attributes within a Terraform
+// file.
 package main
 
 import (

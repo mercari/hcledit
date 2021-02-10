@@ -41,8 +41,7 @@ func NewCmdRead() *cobra.Command {
 }
 
 func runRead(opts *ReadOptions, args []string) (string, error) {
-	query := args[0]
-	filePath := args[1]
+	query, filePath := args[0], args[1]
 
 	editor, err := hcledit.ReadFile(filePath)
 	if err != nil {
@@ -55,42 +54,50 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 	}
 
 	if strings.HasPrefix(opts.OutputFormat, "go-template") {
-		split := strings.SplitN(opts.OutputFormat, "=", 2)
-		if len(split) != 2 {
-			return "", errors.New("go-template should be passed as go-template='<TEMPLATE>'")
-		}
-
-		templateFormat := strings.Trim(split[1], "'")
-
-		tmpl, err := template.New("output").Parse(templateFormat)
-		if err != nil {
-			return "", err
-		}
-
-		var result strings.Builder
-
-		for key, value := range results {
-			formatted := struct {
-				Key   string
-				Value string
-			}{
-				fmt.Sprintf("%v", key),
-				fmt.Sprintf("%v", value),
-			}
-
-			if err := tmpl.Execute(&result, formatted); err != nil {
-				return result.String(), err
-			}
-		}
-
-		return result.String(), nil
-	} else if opts.OutputFormat == "json" {
-		j, err := json.Marshal(results)
-		return string(j), err
-	} else if opts.OutputFormat == "yaml" {
-		y, err := yaml.Marshal(results)
-		return string(y), err
+		return displayTemplate(opts.OutputFormat, results)
 	}
 
-	return "", errors.New("invalid output-format")
+	switch opts.OutputFormat {
+	case "json":
+		j, err := json.Marshal(results)
+		return string(j), err
+	case "yaml":
+		y, err := yaml.Marshal(results)
+		return string(y), err
+	default:
+		return "", errors.New("invalid output-format")
+	}
+}
+
+func displayTemplate(format string, results map[string]interface{}) (string, error) {
+	split := strings.SplitN(format, "=", 2)
+
+	if len(split) != 2 {
+		return "", errors.New("go-template should be passed as go-template='<TEMPLATE>'")
+	}
+
+	templateFormat := strings.Trim(split[1], "'")
+
+	tmpl, err := template.New("output").Parse(templateFormat)
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+
+	for key, value := range results {
+		formatted := struct {
+			Key   string
+			Value string
+		}{
+			fmt.Sprintf("%v", key),
+			fmt.Sprintf("%v", value),
+		}
+
+		if err := tmpl.Execute(&result, formatted); err != nil {
+			return result.String(), err
+		}
+	}
+
+	return result.String(), nil
 }
