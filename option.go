@@ -1,8 +1,9 @@
 package hcledit
 
 type option struct {
-	comment  string
-	afterKey string
+	comment       string
+	afterKey      string
+	beforeNewline bool
 }
 
 type Option func(*option)
@@ -18,5 +19,12 @@ func WithComment(comment string) Option {
 func WithAfter(key string) Option {
 	return func(opt *option) {
 		opt.afterKey = key
+	}
+}
+
+// WithNewLine
+func WithNewLine() Option {
+	return func(opt *option) {
+		opt.beforeNewline = true
 	}
 }

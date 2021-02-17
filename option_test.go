@@ -173,3 +173,90 @@ block {
 		})
 	}
 }
+
+func TestWithNewLine(t *testing.T) {
+	cases := map[string]struct {
+		input string
+		exec  func(editor hcledit.HCLEditor) error
+		want  string
+	}{
+		"CreateAttribute": {
+			input: `
+`,
+			exec: func(editor hcledit.HCLEditor) error {
+				return editor.Create("attribute", "str", hcledit.WithNewLine())
+			},
+			want: `
+
+attribute = "str"
+`,
+		},
+
+		"CreateAttributeInBlock": {
+			input: `
+block "label1" {
+}
+`,
+			exec: func(editor hcledit.HCLEditor) error {
+				return editor.Create("block.label1.attribute", "str", hcledit.WithNewLine())
+			},
+			want: `
+block "label1" {
+
+  attribute = "str"
+}
+`,
+		},
+
+		"CreateAttributeInObject": {
+			input: `
+object = {
+}
+`,
+			exec: func(editor hcledit.HCLEditor) error {
+				return editor.Create("object.attribute", "str", hcledit.WithNewLine())
+			},
+			want: `
+object = {
+
+  attribute = "str"
+}
+`,
+		},
+		"CreateWithComment": {
+			input: `
+object = {
+}
+`,
+			exec: func(editor hcledit.HCLEditor) error {
+				return editor.Create("object.attribute", "str", hcledit.WithComment("// Comment"), hcledit.WithNewLine())
+			},
+			want: `
+object = {
+
+  // Comment
+  attribute = "str"
+}
+`,
+		},
+	}
+
+	for name, tc := range cases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			editor, err := hcledit.Read(strings.NewReader(tc.input), "")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if err := tc.exec(editor); err != nil {
+				t.Fatal(err)
+			}
+
+			got := string(editor.Bytes())
+			if got != tc.want {
+				t.Errorf("Update() mismatch:\ngot:%s\nwant:%s\n", got, tc.want)
+			}
+		})
+	}
+}

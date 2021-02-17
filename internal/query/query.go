@@ -12,8 +12,7 @@ type queryKey struct {
 	key string
 }
 
-type queryWildcard struct {
-}
+type queryWildcard struct{}
 
 func (c *queryKey) Match(target string) bool {
 	return target == c.key

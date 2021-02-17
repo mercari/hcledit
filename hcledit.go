@@ -73,7 +73,7 @@ func (h *hclEditImpl) Create(queryStr string, value interface{}, opts ...Option)
 		return err
 	}
 
-	hdlr, err := handler.New(value, opt.comment, opt.afterKey)
+	hdlr, err := handler.New(value, opt.comment, opt.afterKey, opt.beforeNewline)
 	if err != nil {
 		return err
 	}
@@ -133,6 +133,8 @@ func (h *hclEditImpl) Update(queryStr string, value interface{}, opts ...Option)
 	//   the position of target attribute is also changed...
 	if opt.comment != "" {
 		return fmt.Errorf("WithComment is not supported for Update")
+	} else if opt.beforeNewline {
+		return fmt.Errorf("WithNewLine is not supported for Update")
 	}
 
 	queries, err := query.Build(queryStr)
@@ -140,7 +142,7 @@ func (h *hclEditImpl) Update(queryStr string, value interface{}, opts ...Option)
 		return err
 	}
 
-	hdlr, err := handler.New(value, opt.comment, opt.afterKey)
+	hdlr, err := handler.New(value, opt.comment, opt.afterKey, opt.beforeNewline)
 	if err != nil {
 		return err
 	}

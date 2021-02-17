@@ -46,12 +46,12 @@ func (o *Object) GetObjectAttribute(name string) *ObjectAtrribute {
 	return nil
 }
 
-func (o *Object) SetObjectAttributeRaw(name string, exprTokens, commentTokens hclwrite.Tokens) *ObjectAtrribute {
+func (o *Object) SetObjectAttributeRaw(name string, exprTokens, beforeTokens hclwrite.Tokens) *ObjectAtrribute {
 	objAttr := o.GetObjectAttribute(name)
 	if objAttr != nil {
 		objAttr.exprTokens = exprTokens
 	} else {
-		objAttr = newObjectAttribute(name, exprTokens, commentTokens)
+		objAttr = newObjectAttribute(name, exprTokens, beforeTokens)
 		o.objectAtrributes = append(o.objectAtrributes, objAttr)
 	}
 	return objAttr
