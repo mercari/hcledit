@@ -22,11 +22,7 @@ func (oa *ObjectAtrribute) BuildTokens() hclwrite.Tokens {
 	return tokens
 }
 
-func newObjectAttribute(name string, exprTokens, commentTokens hclwrite.Tokens) *ObjectAtrribute {
-	beforeTokens := hclwrite.Tokens{}
-	if len(commentTokens) != 0 {
-		beforeTokens = append(beforeTokens, commentTokens...)
-	}
+func newObjectAttribute(name string, exprTokens, beforeTokens hclwrite.Tokens) *ObjectAtrribute {
 	beforeTokens = append(beforeTokens, hclwrite.Tokens{
 		{
 			Type:  hclsyntax.TokenIdent,

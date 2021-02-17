@@ -8,23 +8,23 @@ import (
 )
 
 type ctyValueHandler struct {
-	exprTokens    hclwrite.Tokens
-	commentTokens hclwrite.Tokens
+	exprTokens   hclwrite.Tokens
+	beforeTokens hclwrite.Tokens
 
 	afterKey string
 }
 
-func newCtyValueHandler(value cty.Value, comment, afterKey string) (Handler, error) {
+func newCtyValueHandler(value cty.Value, comment, afterKey string, beforeNewline bool) (Handler, error) {
 	return &ctyValueHandler{
-		exprTokens:    hclwrite.NewExpressionLiteral(value).BuildTokens(nil),
-		commentTokens: commentTokens(comment),
+		exprTokens:   hclwrite.NewExpressionLiteral(value).BuildTokens(nil),
+		beforeTokens: beforeTokens(comment, beforeNewline),
 
 		afterKey: afterKey,
 	}, nil
 }
 
 func (h *ctyValueHandler) HandleObject(object *ast.Object, name string, _ []string) error {
-	object.SetObjectAttributeRaw(name, h.exprTokens, h.commentTokens)
+	object.SetObjectAttributeRaw(name, h.exprTokens, h.beforeTokens)
 	if h.afterKey != "" {
 		object.UpdateObjectAttributeOrder(name, h.afterKey)
 	}
@@ -34,8 +34,8 @@ func (h *ctyValueHandler) HandleObject(object *ast.Object, name string, _ []stri
 func (h *ctyValueHandler) HandleBody(body *hclwrite.Body, name string, _ []string) error {
 	body.SetAttributeRaw(name, h.exprTokens)
 
-	if len(h.commentTokens) > 0 {
-		tokens := body.GetAttribute(name).BuildTokens(h.commentTokens)
+	if len(h.beforeTokens) > 0 {
+		tokens := body.GetAttribute(name).BuildTokens(h.beforeTokens)
 		body.RemoveAttribute(name)
 		body.AppendUnstructuredTokens(tokens)
 	}

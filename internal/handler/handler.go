@@ -15,7 +15,7 @@ type Handler interface {
 	HandleObject(object *ast.Object, name string, keyTrail []string) error
 }
 
-func New(input interface{}, comment, afterKey string) (Handler, error) {
+func New(input interface{}, comment, afterKey string, beforeNewline bool) (Handler, error) {
 	switch v := input.(type) {
 	case *BlockVal:
 		return newBlockHandler(v.Labels)
@@ -33,22 +33,28 @@ func New(input interface{}, comment, afterKey string) (Handler, error) {
 		return nil, fmt.Errorf("failed to convert cty value from go value: %s", err)
 	}
 
-	return newCtyValueHandler(ctyVal, comment, afterKey)
+	return newCtyValueHandler(ctyVal, comment, afterKey, beforeNewline)
 }
 
-func commentTokens(comment string) hclwrite.Tokens {
-	if comment == "" {
-		return hclwrite.Tokens{}
-	}
-
-	return hclwrite.Tokens{
-		{
-			Type:  hclsyntax.TokenComment,
-			Bytes: []byte(comment),
-		},
-		{
+func beforeTokens(comment string, beforeNewline bool) hclwrite.Tokens {
+	result := hclwrite.Tokens{}
+	if beforeNewline {
+		result = append(result, &hclwrite.Token{
 			Type:  hclsyntax.TokenNewline,
 			Bytes: []byte{'\n'},
-		},
+		})
 	}
+
+	if comment != "" {
+		result = append(result, &hclwrite.Token{
+			Type:  hclsyntax.TokenComment,
+			Bytes: []byte(comment),
+		})
+		result = append(result, &hclwrite.Token{
+			Type:  hclsyntax.TokenNewline,
+			Bytes: []byte{'\n'},
+		})
+	}
+
+	return result
 }
