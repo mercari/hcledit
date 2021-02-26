@@ -10,15 +10,15 @@ class Hcledit < Formula
 
   if OS.mac? && Hardware::CPU.intel?
     url "https://github.com/mercari/hcledit/releases/download/v0.0.8/hcledit_0.0.8_Darwin_x86_64.tar.gz"
-    sha256 "5b1381561d7ca6cbb117285b4ed1f78c61234ddb06d6082d36d2f749b816cb73"
+    sha256 "5579be59e4270026394d04ee7707a73e1c033780cac224e6f67ecf2d606a9f20"
   end
   if OS.linux? && Hardware::CPU.intel?
     url "https://github.com/mercari/hcledit/releases/download/v0.0.8/hcledit_0.0.8_Linux_x86_64.tar.gz"
-    sha256 "450bf119eb66d230436c83ad2b5961a7aa496adf7d7eeedca140bfb7a0e4b2a4"
+    sha256 "b5a326659a8e087458812db8c6d4f731073562104c4d3a18f53b75e77aaf2a36"
   end
   if OS.linux? && Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
     url "https://github.com/mercari/hcledit/releases/download/v0.0.8/hcledit_0.0.8_Linux_arm64.tar.gz"
-    sha256 "eb25c6b1817dec6bf37a51f4517bad7a33677233c1d769799e1080299901c4b6"
+    sha256 "2ccc7f4d11cea0fd3c10b71ecc8c82a0faf184895775875dcf7f61f6092e37f4"
   end
 
   def install
