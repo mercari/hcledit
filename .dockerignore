@@ -1,0 +1,7 @@
+*
+
+!*.go
+!/internal
+!/cmd
+!/go.mod
+!/go.sum
