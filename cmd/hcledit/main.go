@@ -7,10 +7,8 @@ import (
 	"go.mercari.io/hcledit/cmd/hcledit/internal/command"
 )
 
-var version = "dev"
-
 func main() {
-	cmd := command.NewCmdRoot(version)
+	cmd := command.NewCmdRoot()
 
 	if err := cmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)

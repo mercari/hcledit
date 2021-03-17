@@ -9,7 +9,9 @@ builds:
     env:
       - CGO_ENABLED=0
     ldflags:
-      - -s -w -X main.version={{.Version}}
+      - -s -w
+      - -X go.mercari.io/hcledit/cmd/hcledit/internal/version.Version={{.Tag}}
+      - -X go.mercari.io/hcledit/cmd/hcledit/internal/version.Revision={{.ShortCommit}}
     goos:
       - linux
       - windows

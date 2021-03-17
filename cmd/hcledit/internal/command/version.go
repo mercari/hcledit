@@ -4,14 +4,16 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"go.mercari.io/hcledit/cmd/hcledit/internal/version"
 )
 
-func NewCmdVersion(version string) *cobra.Command {
+func NewCmdVersion() *cobra.Command {
 	return &cobra.Command{
-		Use:    "version",
-		Hidden: true,
+		Use:   "version",
+		Short: "Show the version and revision",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println(version)
+			fmt.Printf("%s (%s)\n", version.Version, version.Revision)
 		},
 	}
 }

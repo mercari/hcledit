@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewCmdRoot(version string) *cobra.Command {
+func NewCmdRoot() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "hcledit <command> <subcommand> [flags]",
 		Short:         "",
@@ -13,10 +13,8 @@ func NewCmdRoot(version string) *cobra.Command {
 		SilenceUsage:  true,
 	}
 
-	cmd.SetVersionTemplate(version)
-
 	cmd.AddCommand(
-		NewCmdVersion(version),
+		NewCmdVersion(),
 		NewCmdRead(),
 		NewCmdCreate(),
 		NewCmdUpdate(),
