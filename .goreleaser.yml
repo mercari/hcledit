@@ -6,8 +6,6 @@ builds:
   - id: hcledit
     binary: bin/hcledit
     dir: cmd/hcledit
-    env:
-      - CGO_ENABLED=0
     ldflags:
       - -s -w
       - -X go.mercari.io/hcledit/cmd/hcledit/internal/version.Version={{.Tag}}
