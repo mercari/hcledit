@@ -39,7 +39,7 @@ resource "google_container_node_pool" "nodes1" {
 To create a new attribute,
 
 ```go
-editor, _ := hcledit.Read(filename)
+editor, _ := hcledit.ReadFile(filename)
 editor.Create("resource.google_container_node_pool.*.node_config.image_type", "COS")
 editor.OverWriteFile()
 ```
@@ -59,7 +59,7 @@ resource "google_container_node_pool" "nodes1" {
 To update the existing attribute,
 
 ```go
-editor, _ := hcledit.Read(filename)
+editor, _ := hcledit.ReadFile(filename)
 editor.Update("resource.google_container_node_pool.*.node_config.machine_type", "e2-highmem-2")
 editor.OverWriteFile()
 ```
@@ -79,7 +79,7 @@ resource "google_container_node_pool" "nodes1" {
 To delete the existing attribute,
 
 ```go
-editor, _ := hcledit.Read(filename)
+editor, _ := hcledit.ReadFile(filename)
 editor.Delete("resource.google_container_node_pool.*.node_config.machine_type")
 editor.OverWriteFile()
 ```
