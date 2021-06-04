@@ -35,7 +35,7 @@ func NewCmdRead() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&opts.OutputFormat, "output-format", "o", "go-template='{{.Key}} {{.Value}}'", "format to print the value as")
+	cmd.Flags().StringVarP(&opts.OutputFormat, "output-format", "o", "go-template='{{.Value}}'", "format to print the value as")
 
 	return cmd
 }
