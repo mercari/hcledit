@@ -23,23 +23,19 @@ func NewCmdCreate() *cobra.Command {
 		Long:  `Runs an address query on a hcl file and create new field with given value.`,
 		Args:  cobra.ExactArgs(3),
 		RunE: func(_ *cobra.Command, args []string) error {
-			if err := runCreate(opts, args); err != nil {
-				return err
-			}
-			return nil
+			return runCreate(opts, args)
 		},
 	}
 
 	cmd.Flags().StringVarP(&opts.Type, "type", "t", "string", "Type of the value")
 	cmd.Flags().StringVarP(&opts.After, "after", "a", "", "Field key which before the value will be created")
 	cmd.Flags().StringVarP(&opts.Comment, "comment", "c", "", "Comment to be inserted before the field added. Comment symbols like // are required")
+
 	return cmd
 }
 
 func runCreate(opts *CreateOptions, args []string) error {
-	query := args[0]
-	valueStr := args[1]
-	filePath := args[2]
+	query, valueStr, filePath := args[0], args[1], args[2]
 
 	editor, err := hcledit.ReadFile(filePath)
 	if err != nil {

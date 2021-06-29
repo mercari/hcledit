@@ -1,7 +1,11 @@
 package command
 
 import (
+	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestRunRead(t *testing.T) {
@@ -95,15 +99,23 @@ func TestRunRead(t *testing.T) {
 
 	for name, tc := range cases {
 		tc := tc
+
 		t.Run(name, func(t *testing.T) {
 			args := []string{tc.query, fixture}
+
 			got, err := runRead(tc.opts, args)
 			if err != nil {
 				t.Fatalf("unexpected err %s", err)
 			}
-			if got != tc.want {
-				t.Errorf("got: %s, want %s", got, tc.want)
+
+			diff := cmp.Diff(tc.want, got, cmpopts.AcyclicTransformer("multiline", func(s string) []string {
+				return strings.Split(s, "\n")
+			}))
+
+			if diff != "" {
+				t.Fatalf("Read mismatch (-want +got):\n%s", diff)
 			}
+
 		})
 	}
 }

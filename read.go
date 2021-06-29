@@ -11,14 +11,14 @@ import (
 )
 
 // New constructs a new HCL file with no content which is ready to be mutated.
-func New() (HCLEditor, error) {
-	return &hclEditImpl{
+func New() (*HCLEditor, error) {
+	return &HCLEditor{
 		writeFile: hclwrite.NewEmptyFile(),
 	}, nil
 }
 
 // ReadFile reads HCL file in the given path and returns operation interface for it.
-func ReadFile(path string) (HCLEditor, error) {
+func ReadFile(path string) (*HCLEditor, error) {
 	path, err := filepath.Abs(path)
 	if err != nil {
 		return nil, err
@@ -35,14 +35,13 @@ func ReadFile(path string) (HCLEditor, error) {
 		return nil, err
 	}
 
-	editorImpl := editor.(*hclEditImpl)
-	editorImpl.path = path
+	editor.path = path
 
-	return editorImpl, err
+	return editor, err
 }
 
 // Read reads HCL file from the given io.Reader and returns operation interface for it.
-func Read(r io.Reader, filename string) (HCLEditor, error) {
+func Read(r io.Reader, filename string) (*HCLEditor, error) {
 	buf, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err
@@ -53,7 +52,7 @@ func Read(r io.Reader, filename string) (HCLEditor, error) {
 		return nil, diags
 	}
 
-	return &hclEditImpl{
+	return &HCLEditor{
 		filename:  filename,
 		writeFile: writeFile,
 	}, nil

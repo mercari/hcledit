@@ -10,13 +10,13 @@ import (
 func TestWithComment(t *testing.T) {
 	cases := map[string]struct {
 		input string
-		exec  func(editor hcledit.HCLEditor) error
+		exec  func(editor *hcledit.HCLEditor) error
 		want  string
 	}{
 		"CreateAttribute": {
 			input: `
 `,
-			exec: func(editor hcledit.HCLEditor) error {
+			exec: func(editor *hcledit.HCLEditor) error {
 				return editor.Create("attribute", "str", hcledit.WithComment("// Comment"))
 			},
 			want: `
@@ -30,7 +30,7 @@ attribute = "str"
 block "label1" {
 }
 `,
-			exec: func(editor hcledit.HCLEditor) error {
+			exec: func(editor *hcledit.HCLEditor) error {
 				return editor.Create("block.label1.attribute", "str", hcledit.WithComment("// Comment"))
 			},
 			want: `
@@ -46,7 +46,7 @@ block "label1" {
 object = {
 }
 `,
-			exec: func(editor hcledit.HCLEditor) error {
+			exec: func(editor *hcledit.HCLEditor) error {
 				return editor.Create("object.attribute", "str", hcledit.WithComment("// Comment"))
 			},
 			want: `

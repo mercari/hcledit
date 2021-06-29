@@ -1,16 +1,17 @@
 package command
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestRunCreate(t *testing.T) {
 	cases := map[string]struct {
-		opts    *CreateOptions
-		want    string
-		wantErr bool
+		opts *CreateOptions
+		want string
 	}{
 		"WithoutAdditionalOptions": {
 			opts: &CreateOptions{},
@@ -55,6 +56,7 @@ func TestRunCreate(t *testing.T) {
 
 	for name, tc := range cases {
 		tc := tc
+
 		t.Run(name, func(t *testing.T) {
 			filename := tempFile(t, `resource "google_container_node_pool" "nodes1" {
   node_config {
@@ -65,19 +67,24 @@ func TestRunCreate(t *testing.T) {
 `)
 
 			tc.opts.Type = "string" // ensure default value
-			if err := runCreate(tc.opts, []string{
+
+			err := runCreate(tc.opts, []string{
 				"resource.google_container_node_pool.nodes1.node_config.disk_size_gb",
 				"100",
 				filename,
-			},
-			); (err != nil) != tc.wantErr {
-				t.Errorf("runCreate() error = %v, wantErr %v", err, tc.wantErr)
+			})
+			if err != nil {
+				t.Fatal(err)
 			}
 
-			got := readFile(t, filename)
-			if diff := cmp.Diff(tc.want, got); diff != "" {
-				t.Errorf("(-want +got):\n%s", diff)
+			diff := cmp.Diff(tc.want, readFile(t, filename), cmpopts.AcyclicTransformer("multiline", func(s string) []string {
+				return strings.Split(s, "\n")
+			}))
+
+			if diff != "" {
+				t.Fatalf("Create mismatch (-want +got):\n%s", diff)
 			}
+
 		})
 	}
 }

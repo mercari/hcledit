@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"go.mercari.io/hcledit"
 )
@@ -150,9 +151,13 @@ object1 = {
 				t.Fatal(err)
 			}
 
-			got := string(editor.Bytes())
-			if got != tc.want {
-				t.Errorf("Create() mismatch:\ngot:%s\nwant:%s\n", got, tc.want)
+			diff := cmp.Diff(tc.want, string(editor.Bytes()),
+				cmpopts.AcyclicTransformer("multiline", func(s string) []string {
+					return strings.Split(s, "\n")
+				}),
+			)
+			if diff != "" {
+				t.Errorf("Create() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
@@ -651,9 +656,14 @@ attribute = [true, false, true]
 				t.Fatal(err)
 			}
 
-			got := string(editor.Bytes())
-			if got != tc.want {
-				t.Errorf("Update() mismatch:\ngot:%s\nwant:%s\n", got, tc.want)
+			diff := cmp.Diff(tc.want, string(editor.Bytes()),
+				cmpopts.AcyclicTransformer("multiline", func(s string) []string {
+					return strings.Split(s, "\n")
+				}),
+			)
+
+			if diff != "" {
+				t.Errorf("Update() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
@@ -818,9 +828,14 @@ object1 = {
 				t.Fatal(err)
 			}
 
-			got := string(editor.Bytes())
-			if got != tc.want {
-				t.Errorf("Delete() mismatch:\ngot:%s\nwant:%s\n", got, tc.want)
+			diff := cmp.Diff(tc.want, string(editor.Bytes()),
+				cmpopts.AcyclicTransformer("multiline", func(s string) []string {
+					return strings.Split(s, "\n")
+				}),
+			)
+
+			if diff != "" {
+				t.Errorf("Delete() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
