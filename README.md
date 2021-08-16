@@ -9,6 +9,8 @@
 
 We provide simple CLI application based on this package. See [`hcledit` command](cmd/hcledit/README.md).
 
+*NOTE*: This is still under heavy development and we don't have enough documentation and we are planing to add breaking changes. Please be careful when using it. 
+
 ## Install
 
 Use `go get`:
