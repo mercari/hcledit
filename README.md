@@ -5,11 +5,11 @@
 [![pkg.go.dev][pkg.go.dev-badge]][pkg.go.dev]
 [![license][license-badge]][license]
 
-`hcledit` is a Go package to edit HCL configurations. Basically, this is just a wrapper of [`hclwrite`](https://pkg.go.dev/github.com/hashicorp/hcl/v2/hclwrite) package which provides low-level features of generating HCL configurations. But `hcledit` allows you to access HCL attribute or block by [`jq`](https://github.com/stedolan/jq)-like query and do various manipulations. See examples of how it works. 
+`hcledit` is a Go package to edit HCL configurations. Basically, this is just a wrapper of [`hclwrite`](https://pkg.go.dev/github.com/hashicorp/hcl/v2/hclwrite) package which provides low-level features of generating HCL configurations. But `hcledit` allows you to access HCL attribute or block by [`jq`](https://github.com/stedolan/jq)-like query and do various manipulations. See examples of how it works.
 
 We provide simple CLI application based on this package. See [`hcledit` command](cmd/hcledit/README.md).
 
-*NOTE*: This is still under heavy development and we don't have enough documentation and we are planing to add breaking changes. Please be careful when using it. 
+*NOTE*: This is still under heavy development and we don't have enough documentation and we are planing to add breaking changes. Please be careful when using it.
 
 ## Install
 
@@ -96,6 +96,13 @@ resource "google_container_node_pool" "nodes1" {
    }
 }
 ```
+
+## Contribution
+
+During the active development, we unlikely accept PRs for new features but welcome bug fixes and documentation.
+If you find issues, please submit an issue first.
+
+If you want to submit a PR for bug fixes or documentation, please read the [CONTRIBUTING.md](CONTRIBUTING.md) and follow the instruction beforehand.
 
 <!-- badge links -->
 
