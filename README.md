@@ -5,9 +5,9 @@
 [![pkg.go.dev][pkg.go.dev-badge]][pkg.go.dev]
 [![license][license-badge]][license]
 
-`hcledit` is a Go package to edit HCL configurations. Basically, this is just a wrapper of [`hclwrite`](https://pkg.go.dev/github.com/hashicorp/hcl/v2/hclwrite) package which provides low-level features of generating HCL configurations. But `hcledit` allows you to access HCL attribute or block by [`jq`](https://github.com/stedolan/jq)-like query and do various manipulations. See examples of how it works.
+`hcledit` is a wrapper around the [`hclwrite`](https://pkg.go.dev/github.com/hashicorp/hcl/v2/hclwrite) package that adds the ability to edit and manipulate [HCL](https://github.com/hashicorp/hcl) documents using a [`jq`](https://github.com/stedolan/jq)-like query/selector syntax.
 
-We provide simple CLI application based on this package. See [`hcledit` command](cmd/hcledit/README.md).
+We provide a Go package and a simple CLI application based on this package. See [`hcledit` command](cmd/hcledit/README.md).
 
 *NOTE*: This is still under heavy development and we don't have enough documentation and we are planing to add breaking changes. Please be careful when using it.
 
@@ -103,6 +103,10 @@ During the active development, we unlikely accept PRs for new features but welco
 If you find issues, please submit an issue first.
 
 If you want to submit a PR for bug fixes or documentation, please read the [CONTRIBUTING.md](CONTRIBUTING.md) and follow the instruction beforehand.
+
+## License
+
+The hcledit is released under the [MIT License](LICENSE).
 
 <!-- badge links -->
 
