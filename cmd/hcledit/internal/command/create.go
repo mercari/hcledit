@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/spf13/cobra"
 
@@ -52,19 +51,4 @@ func runCreate(opts *CreateOptions, args []string) error {
 	}
 
 	return editor.OverWriteFile()
-}
-
-func convert(inputStr, typeStr string) (interface{}, error) {
-	switch typeStr {
-	case "string":
-		return inputStr, nil
-	case "int":
-		return strconv.Atoi(inputStr)
-	case "bool":
-		return strconv.ParseBool(inputStr)
-	case "raw":
-		return hcledit.RawVal(inputStr), nil
-	default:
-		return nil, fmt.Errorf("unsupported type: %s", typeStr)
-	}
 }
