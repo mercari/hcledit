@@ -25,7 +25,7 @@ resource "google_container_node_pool" "nodes1" {
 		filename,
 	}
 
-	if err := runUpdate(args); err != nil {
+	if err := runUpdate(&UpdateOptions{Type: "string"}, args); err != nil {
 		t.Fatal(err)
 	}
 

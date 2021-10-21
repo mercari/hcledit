@@ -1,7 +1,11 @@
 package command
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/spf13/cobra"
+	"go.mercari.io/hcledit"
 )
 
 func NewCmdRoot() *cobra.Command {
@@ -22,4 +26,19 @@ func NewCmdRoot() *cobra.Command {
 	)
 
 	return cmd
+}
+
+func convert(inputStr, typeStr string) (interface{}, error) {
+	switch typeStr {
+	case "string":
+		return inputStr, nil
+	case "int":
+		return strconv.Atoi(inputStr)
+	case "bool":
+		return strconv.ParseBool(inputStr)
+	case "raw":
+		return hcledit.RawVal(inputStr), nil
+	default:
+		return nil, fmt.Errorf("unsupported type: %s", typeStr)
+	}
 }
