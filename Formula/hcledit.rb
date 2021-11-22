@@ -22,6 +22,6 @@ class Hcledit < Formula
   end
 
   def install
-    bin.install "hcledit"
+    bin.install "bin/hcledit"
   end
 end
