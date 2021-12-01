@@ -40,3 +40,4 @@ brews:
     folder: Formula
     homepage: https://github.com/mercari/hcledit
     description: CLI to edit HCL configurations
+    install: 'bin.install "bin/hcledit"'
