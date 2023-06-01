@@ -6,6 +6,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/hashicorp/hcl/v2/hclwrite"
+	"github.com/zclconf/go-cty/cty"
 
 	"go.mercari.io/hcledit"
 )
@@ -836,6 +838,73 @@ object1 = {
 
 			if diff != "" {
 				t.Errorf("Delete() mismatch (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestCustomEdit(t *testing.T) {
+	cases := map[string]struct {
+		input    string
+		function func(*hclwrite.Body) error
+		want     string
+	}{
+		"Attribute": {
+			input: `
+`,
+			function: func(b *hclwrite.Body) error {
+				block := b.AppendNewBlock("block", []string{"test"})
+				blockBody := block.Body()
+				blockBody.SetAttributeValue("attribute", cty.StringVal("A"))
+				return nil
+			},
+			want: `
+block "test" {
+  attribute = "A"
+}
+`,
+		},
+		"Existing block with identical labels": {
+			input: `
+block "test" {
+  existing = "A"
+}
+`,
+			function: func(b *hclwrite.Body) error {
+				block := b.AppendNewBlock("block", []string{"test"})
+				blockBody := block.Body()
+				blockBody.SetAttributeValue("attribute", cty.StringVal("A"))
+				return nil
+			},
+			want: `
+block "test" {
+  existing = "A"
+}
+block "test" {
+  attribute = "A"
+}
+`,
+		},
+	}
+
+	for name, tc := range cases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			editor, err := hcledit.Read(strings.NewReader(tc.input), "")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := editor.CustomEdit(tc.function); err != nil {
+				t.Fatal(err)
+			}
+
+			diff := cmp.Diff(tc.want, string(editor.Bytes()),
+				cmpopts.AcyclicTransformer("multiline", func(s string) []string {
+					return strings.Split(s, "\n")
+				}),
+			)
+			if diff != "" {
+				t.Errorf("CustomEdit() mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
