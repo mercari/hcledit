@@ -173,6 +173,12 @@ func (h *HCLEditor) Delete(queryStr string, opts ...Option) error {
 	return w.Walk(h.writeFile.Body(), queries, 0, []string{})
 }
 
+// CustomEdit executes a custom function on the underlying file
+func (h *HCLEditor) CustomEdit(fn func(*hclwrite.Body) error) error {
+	defer h.reload()
+	return fn(h.writeFile.Body())
+}
+
 // reload re-parse the HCL file. Some operation causes like `WithAfter` modifies Body token structure
 // drastically (it re-construct it from scratch...) and, because of it, some operation will not work
 // properly after it
