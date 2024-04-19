@@ -6,11 +6,124 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclwrite"
+	"github.com/zclconf/go-cty-debug/ctydebug"
 	"github.com/zclconf/go-cty/cty"
 
 	"go.mercari.io/hcledit"
 )
+
+func keys[K comparable, V any](m map[K]V) map[K]bool {
+	ret := make(map[K]bool, len(m))
+	for k, _ := range m {
+		ret[k] = true
+	}
+	return ret
+}
+
+func TestUpdateCtx(t *testing.T) {
+	cases := map[string]struct {
+		input      string
+		initialCtx *hcl.EvalContext
+		expected   *hcl.EvalContext
+	}{
+		"parse string ctx": {
+			input: `variable "name" {
+  description = "your name"
+  default     = "nameVal"
+}`,
+			initialCtx: &hcl.EvalContext{Variables: make(map[string]cty.Value)},
+			expected: &hcl.EvalContext{
+				Variables: map[string]cty.Value{
+					"var": cty.ObjectVal(map[string]cty.Value{"name": cty.StringVal("nameVal")}),
+				},
+			},
+		},
+		"parse interpolated value": {
+			input: `locals {
+  team_name = "team-${var.name}"
+}`,
+			initialCtx: &hcl.EvalContext{
+				Variables: map[string]cty.Value{
+					"var": cty.ObjectVal(map[string]cty.Value{"name": cty.StringVal("nameVal")}),
+				},
+			},
+			expected: &hcl.EvalContext{
+				Variables: map[string]cty.Value{
+					"var":   cty.ObjectVal(map[string]cty.Value{"name": cty.StringVal("nameVal")}),
+					"local": cty.ObjectVal(map[string]cty.Value{"team_name": cty.StringVal("team-nameVal")}),
+				},
+			},
+		},
+		"parse interpolated from same file": {
+			input: `variable "name" {
+  description = "your name"
+  default     = "nameVal"
+}
+
+locals {
+  team_name = "team-${var.name}"
+}`,
+			initialCtx: &hcl.EvalContext{Variables: make(map[string]cty.Value)},
+			expected: &hcl.EvalContext{
+				Variables: map[string]cty.Value{
+					"var":   cty.ObjectVal(map[string]cty.Value{"name": cty.StringVal("nameVal")}),
+					"local": cty.ObjectVal(map[string]cty.Value{"team_name": cty.StringVal("team-nameVal")}),
+				},
+			},
+		},
+		"parse interpolated from same file -- expected unknown val": {
+			input: `locals {
+  team_name = "team-${local.name}"
+}
+locals {
+  name = "local"
+}`,
+			initialCtx: &hcl.EvalContext{Variables: make(map[string]cty.Value)},
+			expected: &hcl.EvalContext{
+				Variables: map[string]cty.Value{
+					"local": cty.ObjectVal(map[string]cty.Value{
+						"team_name": cty.UnknownVal(cty.String),
+						"name": cty.StringVal("local"),
+					}),
+				},
+			},
+		},
+	}
+	for name, tc := range cases {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			editor, err := hcledit.Read(strings.NewReader(tc.input), "")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			ctx := tc.initialCtx
+			if err := editor.UpdateCtx(ctx); err != nil {
+				t.Fatal("UpdateCtx() failed", err)
+			}
+
+			// Cannot use cmp.Diff() as there are unexported struct members as
+			// well as unexported types that we cannot pass to
+			// cmp.AllowUnexported(). Instead, we'll compare to make sure they
+			// contain the same variable keys and individually check equality
+			// for all variable values.
+			actualVars := keys(ctx.Variables)
+			expectedVars := keys(tc.expected.Variables)
+			if diff := cmp.Diff(expectedVars, actualVars); diff != "" {
+				t.Errorf("mismatch in expected EvalContext variables (-want +got):\n%s", diff)
+			}
+			for v, _ := range actualVars {
+				expectedVal := ctx.Variables[v]
+				actualVal := tc.expected.Variables[v]
+				if diff := ctydebug.DiffValues(expectedVal, actualVal); diff != "" {
+					t.Errorf("mismatch in expected value for %v (-want +got):\n%s", v, diff)
+				}
+			}
+		})
+	}
+}
 
 func TestCreate(t *testing.T) {
 	cases := map[string]struct {
@@ -252,7 +365,7 @@ object = {
 object1 = {
   object2 = {
     attribute = "R"
-  }  
+  }
 }
 `,
 			query: "object1.object2.attribute",

@@ -41,6 +41,7 @@ func (h *readHandler) HandleObject(object *ast.Object, name string, keyTrail []s
 	return nil
 }
 
+// TODO(ryan-ph): this needs to take *hcl.EvalContext)
 func parse(buf []byte, name string) (cty.Value, error) {
 	file, diags := hclsyntax.ParseConfig(buf, "", hcl.Pos{Line: 1, Column: 1})
 	if diags.HasErrors() {
@@ -48,6 +49,7 @@ func parse(buf []byte, name string) (cty.Value, error) {
 	}
 
 	body := file.Body.(*hclsyntax.Body)
+	// TODO(ryan-ph): this needs to take *hcl.EvalContext)
 	v, diags := body.Attributes[name].Expr.Value(nil)
 	if diags.HasErrors() {
 		return cty.Value{}, diags

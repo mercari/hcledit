@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
@@ -52,8 +53,14 @@ func Read(r io.Reader, filename string) (*HCLEditor, error) {
 		return nil, diags
 	}
 
+	hclFile, diags := hclsyntax.ParseConfig(buf, filename, hcl.Pos{Line: 1, Column: 1})
+	if diags.HasErrors() {
+		return nil, diags
+	}
+
 	return &HCLEditor{
 		filename:  filename,
 		writeFile: writeFile,
+		hclFile:   hclFile,
 	}, nil
 }
