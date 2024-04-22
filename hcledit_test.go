@@ -330,6 +330,26 @@ attribute = [true, false, true]
 				"attribute": []bool{true, false, true},
 			},
 		},
+
+		"fallback to absolute variable name": {
+			input: `
+attribute = local.var
+`,
+			query: "attribute",
+			want: map[string]interface{}{
+				"attribute": "local.var",
+			},
+		},
+
+		"fallback to uninterpolated string": {
+			input: `
+attribute = "some-${local.var}"
+`,
+			query: "attribute",
+			want: map[string]interface{}{
+				"attribute": `"some-${local.var}"`,
+			},
+		},
 	}
 
 	for name, tc := range cases {

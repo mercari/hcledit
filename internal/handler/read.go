@@ -48,9 +48,12 @@ func parse(buf []byte, name string) (cty.Value, error) {
 	}
 
 	body := file.Body.(*hclsyntax.Body)
-	v, diags := body.Attributes[name].Expr.Value(nil)
+	expr := body.Attributes[name].Expr
+	v, diags := expr.Value(nil)
 	if diags.HasErrors() {
-		return cty.Value{}, diags
+		// Could not parse the value with a nil EvalContext, so this is likely an
+		// interpolated string. Instead, attempt to parse the raw string value.
+		return cty.StringVal(string(expr.Range().SliceBytes(buf))), nil
 	}
 	return v, nil
 }
