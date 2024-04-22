@@ -15,6 +15,9 @@ module "my-module" {
     "f",
   ]
 
+  unevaluateable_reference = var.name
+  unevaluateable_interpolation = "this-${local.reference}"
+
   map_variable = {
     bool_variable   = true
     int_variable    = 1

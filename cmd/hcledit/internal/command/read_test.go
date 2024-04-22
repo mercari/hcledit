@@ -95,6 +95,22 @@ func TestRunRead(t *testing.T) {
 			want:  "",
 			opts:  defaultOpts,
 		},
+		"unevaluateable reference fallback": {
+			query: "module.my-module.unevaluateable_reference",
+			want:  "var.name",
+			opts: &ReadOptions{
+				OutputFormat: "go-template='{{.Value}}'",
+				Fallback:     true,
+			},
+		},
+		"unevaluateable interpolation fallback": {
+			query: "module.my-module.unevaluateable_interpolation",
+			want:  `"this-${local.reference}"`,
+			opts: &ReadOptions{
+				OutputFormat: "go-template='{{.Value}}'",
+				Fallback:     true,
+			},
+		},
 	}
 
 	for name, tc := range cases {
