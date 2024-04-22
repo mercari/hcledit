@@ -89,7 +89,7 @@ func (h *HCLEditor) Read(queryStr string, opts ...Option) (map[string]interface{
 	}
 
 	results := make(map[string]cty.Value)
-	hdlr, err := handler.NewReadHandler(results)
+	hdlr, err := handler.NewReadHandler(results, opt.readFallbackToRawString)
 	if err != nil {
 		return nil, err
 	}

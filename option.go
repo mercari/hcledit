@@ -1,9 +1,10 @@
 package hcledit
 
 type option struct {
-	comment       string
-	afterKey      string
-	beforeNewline bool
+	comment                 string
+	afterKey                string
+	beforeNewline           bool
+	readFallbackToRawString bool
 }
 
 // Option configures specific behavior for specific HCLEditor operations.
@@ -28,5 +29,11 @@ func WithAfter(key string) Option {
 func WithNewLine() Option {
 	return func(opt *option) {
 		opt.beforeNewline = true
+	}
+}
+
+func WithReadFallbackToRawString() Option {
+	return func(opt *option) {
+		opt.readFallbackToRawString = true
 	}
 }
