@@ -26,13 +26,7 @@ func newBlockHandler(labels []string, comment string) (Handler, error) {
 }
 
 func (h *blockHandler) HandleBody(body *hclwrite.Body, name string, _ []string) error {
-	if h.comment != "" {
-		if !strings.HasPrefix(h.comment, "//") {
-			h.comment = fmt.Sprintf("// %s", h.comment)
-		}
-		tokens := beforeTokens(h.comment, false)
-		body.AppendUnstructuredTokens(tokens)
-	}
+	body.AppendUnstructuredTokens(beforeTokens(fmt.Sprintf("// %s", strings.TrimSpace(strings.TrimPrefix(h.comment, "//"))), false))
 
 	body.AppendNewBlock(name, h.labels)
 	return nil
