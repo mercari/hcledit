@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"strings"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/hcl/v2/hclwrite"
 
@@ -26,7 +26,14 @@ func newBlockHandler(labels []string, comment string) (Handler, error) {
 }
 
 func (h *blockHandler) HandleBody(body *hclwrite.Body, name string, _ []string) error {
-	body.AppendUnstructuredTokens(beforeTokens(fmt.Sprintf("// %s", strings.TrimSpace(strings.TrimPrefix(h.comment, "//"))), false))
+	if h.comment != "" {
+		body.AppendUnstructuredTokens(
+			beforeTokens(
+				fmt.Sprintf("// %s", strings.TrimSpace(strings.TrimPrefix(h.comment, "//"))),
+				false,
+			),
+		)
+	}
 
 	body.AppendNewBlock(name, h.labels)
 	return nil
