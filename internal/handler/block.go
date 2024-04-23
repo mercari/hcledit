@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"strings"
 	"fmt"
 
 	"github.com/hashicorp/hcl/v2/hclwrite"
@@ -13,16 +14,20 @@ type BlockVal struct {
 }
 
 type blockHandler struct {
-	labels []string
+	labels  []string
+	comment string
 }
 
-func newBlockHandler(labels []string) (Handler, error) {
+func newBlockHandler(labels []string, comment string) (Handler, error) {
 	return &blockHandler{
-		labels: labels,
+		labels:  labels,
+		comment: comment,
 	}, nil
 }
 
 func (h *blockHandler) HandleBody(body *hclwrite.Body, name string, _ []string) error {
+	body.AppendUnstructuredTokens(beforeTokens(fmt.Sprintf("// %s", strings.TrimSpace(strings.TrimPrefix(h.comment, "//"))), false))
+
 	body.AppendNewBlock(name, h.labels)
 	return nil
 }
