@@ -13,9 +13,11 @@ import (
 )
 
 func TestCreate(t *testing.T) {
+	defaultOpts := []hcledit.Option{}
 	cases := map[string]struct {
 		input string
 		query string
+		opts  []hcledit.Option
 		value interface{}
 		want  string
 	}{
@@ -23,6 +25,7 @@ func TestCreate(t *testing.T) {
 			input: `
 `,
 			query: "attribute",
+			opts:  defaultOpts,
 			value: "C",
 			want: `
 attribute = "C"
@@ -35,6 +38,7 @@ block "label" {
 }
 `,
 			query: "block.label.attribute",
+			opts:  defaultOpts,
 			value: "C",
 			want: `
 block "label" {
@@ -51,6 +55,7 @@ block1 "label1" {
 }
 `,
 			query: "block1.label1.block2.label2.attribute",
+			opts:  defaultOpts,
 			value: "C",
 			want: `
 block1 "label1" {
@@ -70,6 +75,7 @@ block "label" "label2" {
 }
 `,
 			query: "block.label.*.attribute",
+			opts:  defaultOpts,
 			value: "C",
 			want: `
 block "label" "label1" {
@@ -88,6 +94,7 @@ object = {
 }
 `,
 			query: "object.attribute",
+			opts:  defaultOpts,
 			value: "C",
 			want: `
 object = {
@@ -103,6 +110,7 @@ object = {
 }
 `,
 			query: "object.attribute2",
+			opts:  defaultOpts,
 			value: "C",
 			want: `
 object = {
@@ -116,8 +124,22 @@ object = {
 			input: `
 `,
 			query: "block",
+			opts:  defaultOpts,
 			value: hcledit.BlockVal("label1", "label2"),
 			want: `
+block "label1" "label2" {
+}
+`,
+		},
+
+		"Block with comment": {
+			input: `
+`,
+			query: "block",
+			opts:  []hcledit.Option{hcledit.WithComment("test comment")},
+			value: hcledit.BlockVal("label1", "label2"),
+			want: `
+// test comment
 block "label1" "label2" {
 }
 `,
@@ -127,6 +149,7 @@ block "label1" "label2" {
 			input: `
 `,
 			query: "object1",
+			opts:  defaultOpts,
 			value: hcledit.RawVal(`{
   object2 = {
     attribute1 = "str1"
@@ -149,7 +172,7 @@ object1 = {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err := editor.Create(tc.query, tc.value); err != nil {
+			if err := editor.Create(tc.query, tc.value, tc.opts...); err != nil {
 				t.Fatal(err)
 			}
 

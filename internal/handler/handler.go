@@ -18,7 +18,7 @@ type Handler interface {
 func New(input interface{}, comment, afterKey string, beforeNewline bool) (Handler, error) {
 	switch v := input.(type) {
 	case *BlockVal:
-		return newBlockHandler(v.Labels)
+		return newBlockHandler(v.Labels, comment)
 	case *RawVal:
 		return newRawHandler(v.RawString)
 	}
