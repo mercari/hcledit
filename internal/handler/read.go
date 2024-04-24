@@ -12,18 +12,20 @@ import (
 )
 
 type readHandler struct {
-	results map[string]cty.Value
+	results             map[string]cty.Value
+	fallbackToRawString bool
 }
 
-func NewReadHandler(results map[string]cty.Value) (Handler, error) {
+func NewReadHandler(results map[string]cty.Value, fallbackToRawString bool) (Handler, error) {
 	return &readHandler{
-		results: results,
+		results:             results,
+		fallbackToRawString: fallbackToRawString,
 	}, nil
 }
 
 func (h *readHandler) HandleBody(body *hclwrite.Body, name string, keyTrail []string) error {
 	buf := body.GetAttribute(name).BuildTokens(nil).Bytes()
-	value, err := parse(buf, name)
+	value, err := parse(buf, name, h.fallbackToRawString)
 	if err != nil {
 		return err
 	}
@@ -33,7 +35,7 @@ func (h *readHandler) HandleBody(body *hclwrite.Body, name string, keyTrail []st
 
 func (h *readHandler) HandleObject(object *ast.Object, name string, keyTrail []string) error {
 	buf := object.GetObjectAttribute(name).BuildTokens().Bytes()
-	value, err := parse(buf, name)
+	value, err := parse(buf, name, h.fallbackToRawString)
 	if err != nil {
 		return err
 	}
@@ -41,16 +43,23 @@ func (h *readHandler) HandleObject(object *ast.Object, name string, keyTrail []s
 	return nil
 }
 
-func parse(buf []byte, name string) (cty.Value, error) {
+func parse(buf []byte, name string, fallback bool) (cty.Value, error) {
 	file, diags := hclsyntax.ParseConfig(buf, "", hcl.Pos{Line: 1, Column: 1})
 	if diags.HasErrors() {
 		return cty.Value{}, diags
 	}
 
 	body := file.Body.(*hclsyntax.Body)
-	v, diags := body.Attributes[name].Expr.Value(nil)
+	expr := body.Attributes[name].Expr
+	v, diags := expr.Value(nil)
 	if diags.HasErrors() {
-		return cty.Value{}, diags
+		if !fallback {
+			return cty.Value{}, diags
+		}
+
+		// Could not parse the value with a nil EvalContext, so this is likely an
+		// interpolated string. Instead, attempt to parse the raw string value.
+		return cty.StringVal(string(expr.Range().SliceBytes(buf))), nil
 	}
 	return v, nil
 }
