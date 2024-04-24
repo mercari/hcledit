@@ -25,12 +25,13 @@ func NewReadHandler(results map[string]cty.Value, fallbackToRawString bool) (Han
 
 func (h *readHandler) HandleBody(body *hclwrite.Body, name string, keyTrail []string) error {
 	buf := body.GetAttribute(name).BuildTokens(nil).Bytes()
-	value, err := parse(buf, name, h.fallbackToRawString)
-	if err != nil {
+	fallback := h.fallbackToRawString
+	value, err := parse(buf, name, fallback)
+	if err != nil && !fallback {
 		return err
 	}
 	h.results[strings.Join(keyTrail, ".")] = value
-	return nil
+	return err
 }
 
 func (h *readHandler) HandleObject(object *ast.Object, name string, keyTrail []string) error {
@@ -59,7 +60,7 @@ func parse(buf []byte, name string, fallback bool) (cty.Value, error) {
 
 		// Could not parse the value with a nil EvalContext, so this is likely an
 		// interpolated string. Instead, attempt to parse the raw string value.
-		return cty.StringVal(string(expr.Range().SliceBytes(buf))), nil
+		return cty.StringVal(string(expr.Range().SliceBytes(buf))), diags
 	}
 	return v, nil
 }
