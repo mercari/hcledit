@@ -205,17 +205,19 @@ object1 = {
 
 func TestRead(t *testing.T) {
 	cases := map[string]struct {
-		input   string
-		query   string
-		options []hcledit.Option
-		want    map[string]interface{}
+		input     string
+		query     string
+		options   []hcledit.Option
+		expectErr bool
+		want      map[string]interface{}
 	}{
 		"Attribute": {
 			input: `
 attribute = "R"
 `,
-			query: "attribute",
-			options: make([]hcledit.Option, 0),
+			query:     "attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
 			want: map[string]interface{}{
 				"attribute": "R",
 			},
@@ -228,9 +230,10 @@ block "label1" "label2" {
   attribute = "str"
 }
 `,
-			options: make([]hcledit.Option, 0),
-			query: "block",
-			want:  map[string]interface{}{},
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "block",
+			want:      map[string]interface{}{},
 		},
 
 		"AttributeInBlock1": {
@@ -239,8 +242,9 @@ block "label1" "label2" {
   attribute = "R"
 }
 `,
-			options: make([]hcledit.Option, 0),
-			query: "block.label1.label2.attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "block.label1.label2.attribute",
 			want: map[string]interface{}{
 				"block.label1.label2.attribute": "R",
 			},
@@ -254,8 +258,9 @@ block1 "label1" "label2" {
   }
 }
 `,
-			options: make([]hcledit.Option, 0),
-			query: "block1.label1.label2.block2.label3.label4.attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "block1.label1.label2.block2.label3.label4.attribute",
 			want: map[string]interface{}{
 				"block1.label1.label2.block2.label3.label4.attribute": "R",
 			},
@@ -272,8 +277,9 @@ block "label" "label2" {
 }
 
 `,
-			options: make([]hcledit.Option, 0),
-			query: "block.label.*.attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "block.label.*.attribute",
 			want: map[string]interface{}{
 				"block.label.label1.attribute": "R",
 				"block.label.label2.attribute": "R",
@@ -286,8 +292,9 @@ object = {
   attribute = "R"
 }
 `,
-			options: make([]hcledit.Option, 0),
-			query: "object.attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "object.attribute",
 			want: map[string]interface{}{
 				"object.attribute": "R",
 			},
@@ -300,8 +307,9 @@ object1 = {
   }  
 }
 `,
-			options: make([]hcledit.Option, 0),
-			query: "object1.object2.attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "object1.object2.attribute",
 			want: map[string]interface{}{
 				"object1.object2.attribute": "R",
 			},
@@ -311,8 +319,9 @@ object1 = {
 			input: `
 attribute = 1
 `,
-			options: make([]hcledit.Option, 0),
-			query: "attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "attribute",
 			want: map[string]interface{}{
 				"attribute": 1,
 			},
@@ -322,8 +331,9 @@ attribute = 1
 			input: `
 attribute = "str"
 `,
-			options: make([]hcledit.Option, 0),
-			query: "attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "attribute",
 			want: map[string]interface{}{
 				"attribute": "str",
 			},
@@ -333,8 +343,9 @@ attribute = "str"
 			input: `
 attribute = true
 `,
-			options: make([]hcledit.Option, 0),
-			query: "attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "attribute",
 			want: map[string]interface{}{
 				"attribute": true,
 			},
@@ -344,8 +355,9 @@ attribute = true
 			input: `
 attribute = false
 `,
-			options: make([]hcledit.Option, 0),
-			query: "attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "attribute",
 			want: map[string]interface{}{
 				"attribute": false,
 			},
@@ -355,8 +367,9 @@ attribute = false
 			input: `
 attribute = ["str1", "str2", "str3"]
 `,
-			options: make([]hcledit.Option, 0),
-			query: "attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "attribute",
 			want: map[string]interface{}{
 				"attribute": []string{"str1", "str2", "str3"},
 			},
@@ -366,8 +379,9 @@ attribute = ["str1", "str2", "str3"]
 			input: `
 attribute = [1, 2, 3]
 `,
-			options: make([]hcledit.Option, 0),
-			query: "attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "attribute",
 			want: map[string]interface{}{
 				"attribute": []int{1, 2, 3},
 			},
@@ -377,8 +391,9 @@ attribute = [1, 2, 3]
 			input: `
 attribute = [true, false, true]
 `,
-			options: make([]hcledit.Option, 0),
-			query: "attribute",
+			options:   make([]hcledit.Option, 0),
+			expectErr: false,
+			query:     "attribute",
 			want: map[string]interface{}{
 				"attribute": []bool{true, false, true},
 			},
@@ -388,8 +403,9 @@ attribute = [true, false, true]
 			input: `
 attribute = local.var
 `,
-			options: []hcledit.Option{hcledit.WithReadFallbackToRawString()},
-			query: "attribute",
+			options:   []hcledit.Option{hcledit.WithReadFallbackToRawString()},
+			expectErr: true,
+			query:     "attribute",
 			want: map[string]interface{}{
 				"attribute": "local.var",
 			},
@@ -399,8 +415,9 @@ attribute = local.var
 			input: `
 attribute = "some-${local.var}"
 `,
-			options: []hcledit.Option{hcledit.WithReadFallbackToRawString()},
-			query: "attribute",
+			options:   []hcledit.Option{hcledit.WithReadFallbackToRawString()},
+			expectErr: true,
+			query:     "attribute",
 			want: map[string]interface{}{
 				"attribute": `"some-${local.var}"`,
 			},
@@ -416,7 +433,7 @@ attribute = "some-${local.var}"
 			}
 
 			got, err := editor.Read(tc.query, tc.options...)
-			if err != nil {
+			if !tc.expectErr && err != nil {
 				t.Fatal(err)
 			}
 

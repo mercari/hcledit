@@ -30,7 +30,7 @@ func (h *blockHandler) HandleBody(body *hclwrite.Body, name string, _ []string) 
 		body.AppendUnstructuredTokens(
 			beforeTokens(
 				fmt.Sprintf("// %s", strings.TrimSpace(strings.TrimPrefix(h.comment, "//"))),
-				true,	
+				true,
 			),
 		)
 	}

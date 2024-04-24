@@ -32,6 +32,9 @@ func WithNewLine() Option {
 	}
 }
 
+// This provides a fallback to return the raw string of the value if we could
+// not parse it. If this option is provided to HCLEditor.Read(), the error
+// return value will signal fallback occurred.
 func WithReadFallbackToRawString() Option {
 	return func(opt *option) {
 		opt.readFallbackToRawString = true

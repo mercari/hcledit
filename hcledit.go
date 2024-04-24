@@ -88,8 +88,9 @@ func (h *HCLEditor) Read(queryStr string, opts ...Option) (map[string]interface{
 		return nil, err
 	}
 
+	fallback := opt.readFallbackToRawString
 	results := make(map[string]cty.Value)
-	hdlr, err := handler.NewReadHandler(results, opt.readFallbackToRawString)
+	hdlr, err := handler.NewReadHandler(results, fallback)
 	if err != nil {
 		return nil, err
 	}
@@ -99,11 +100,17 @@ func (h *HCLEditor) Read(queryStr string, opts ...Option) (map[string]interface{
 		Mode:    walker.Read,
 	}
 
-	if err := w.Walk(h.writeFile.Body(), queries, 0, []string{}); err != nil {
+	err = w.Walk(h.writeFile.Body(), queries, 0, []string{})
+	if err != nil && !fallback {
 		return nil, err
 	}
 
-	return convert(results)
+	ret, convertErr := convert(results)
+	if convertErr != nil {
+		return ret, convertErr
+	}
+
+	return ret, err
 }
 
 // Update replaces attributes and blocks which matched with its key

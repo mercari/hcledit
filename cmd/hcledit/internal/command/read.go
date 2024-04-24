@@ -50,12 +50,12 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 		return "", fmt.Errorf("failed to read file: %s", err)
 	}
 
-	readOpts:= []hcledit.Option{}
+	readOpts := []hcledit.Option{}
 	if opts.Fallback {
 		readOpts = append(readOpts, hcledit.WithReadFallbackToRawString())
 	}
 	results, err := editor.Read(query, readOpts...)
-	if err != nil {
+	if err != nil && !opts.Fallback {
 		return "", fmt.Errorf("failed to read file: %s", err)
 	}
 
