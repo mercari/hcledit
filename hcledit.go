@@ -100,9 +100,9 @@ func (h *HCLEditor) Read(queryStr string, opts ...Option) (map[string]interface{
 		Mode:    walker.Read,
 	}
 
-	err = w.Walk(h.writeFile.Body(), queries, 0, []string{})
-	if err != nil && !fallback {
-		return nil, err
+	walkErr := w.Walk(h.writeFile.Body(), queries, 0, []string{})
+	if walkErr != nil && !fallback {
+		return nil, walkErr
 	}
 
 	ret, convertErr := convert(results)
@@ -110,7 +110,7 @@ func (h *HCLEditor) Read(queryStr string, opts ...Option) (map[string]interface{
 		return ret, convertErr
 	}
 
-	return ret, err
+	return ret, walkErr
 }
 
 // Update replaces attributes and blocks which matched with its key
