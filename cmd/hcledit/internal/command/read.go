@@ -15,6 +15,7 @@ import (
 
 type ReadOptions struct {
 	OutputFormat string
+	Fallback     bool
 }
 
 func NewCmdRead() *cobra.Command {
@@ -36,6 +37,7 @@ func NewCmdRead() *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&opts.OutputFormat, "output-format", "o", "go-template='{{.Value}}'", "format to print the value as")
+	cmd.Flags().BoolVar(&opts.Fallback, "fallback", false, "falls back to reading the raw value if it cannot be evaluated")
 
 	return cmd
 }
@@ -48,7 +50,11 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 		return "", fmt.Errorf("failed to read file: %s", err)
 	}
 
-	results, err := editor.Read(query)
+	readOpts:= []hcledit.Option{}
+	if opts.Fallback {
+		readOpts = append(readOpts, hcledit.WithReadFallbackToRawString())
+	}
+	results, err := editor.Read(query, readOpts...)
 	if err != nil {
 		return "", fmt.Errorf("failed to read file: %s", err)
 	}
