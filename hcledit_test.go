@@ -139,6 +139,21 @@ block "label1" "label2" {
 			opts:  []hcledit.Option{hcledit.WithComment("test comment")},
 			value: hcledit.BlockVal("label1", "label2"),
 			want: `
+
+// test comment
+block "label1" "label2" {
+}
+`,
+		},
+
+		"Append block with comment": {
+			input: `
+prev {}`,
+			query: "block",
+			opts:  []hcledit.Option{hcledit.WithComment("test comment")},
+			value: hcledit.BlockVal("label1", "label2"),
+			want: `
+prev {}
 // test comment
 block "label1" "label2" {
 }
