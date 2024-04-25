@@ -3,8 +3,8 @@ module go.mercari.io/hcledit
 go 1.16
 
 require (
-	github.com/google/go-cmp v0.5.9
-	github.com/hashicorp/hcl/v2 v2.10.1
+	github.com/google/go-cmp v0.6.0
+	github.com/hashicorp/hcl/v2 v2.20.1
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/spf13/cobra v1.7.0
 	github.com/zclconf/go-cty v1.14.4
