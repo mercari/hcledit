@@ -33,6 +33,9 @@ jobs:
 
       - name: Login to DockerHub
         uses: docker/login-action@v1 
+        # The secrets are not available in pull_requests. This step is only
+        # needed to push, so it's fine to skip this in PR builds.
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
