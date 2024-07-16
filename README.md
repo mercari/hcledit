@@ -13,10 +13,10 @@ We provide a Go package and a simple CLI application based on this package. See 
 
 ## Install
 
-Use `go get`:
+Use `go install`:
 
 ```bash
-$ go get -u go.mercari.io/hcledit
+$ go install go.mercari.io/hcledit/cmd/hcledit@latest
 ```
 
 ## Usage
