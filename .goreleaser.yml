@@ -35,7 +35,7 @@ changelog:
   filters:
     exclude:
       - '^docs:'
-      - '^test:'      
+      - '^test:'
       - Merge pull request
       - Merge branch
 brews:
@@ -45,3 +45,5 @@ brews:
     directory: Formula
     homepage: https://github.com/mercari/hcledit
     description: CLI to edit HCL configurations
+    pull_request:
+      enabled: true
