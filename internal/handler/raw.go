@@ -13,9 +13,10 @@ type RawVal struct {
 
 type rawHandler struct {
 	rawTokens hclwrite.Tokens
+	beforeTokens hclwrite.Tokens
 }
 
-func newRawHandler(rawString string) (Handler, error) {
+func newRawHandler(rawString, comment string, beforeNewline bool) (Handler, error) {
 	return &rawHandler{
 		// NOTE(tcnksm):
 		rawTokens: hclwrite.Tokens{
@@ -24,11 +25,17 @@ func newRawHandler(rawString string) (Handler, error) {
 				Bytes: []byte(rawString),
 			},
 		},
+		beforeTokens: beforeTokens(comment, beforeNewline),
 	}, nil
 }
 
 func (h *rawHandler) HandleBody(body *hclwrite.Body, name string, _ []string) error {
 	body.SetAttributeRaw(name, h.rawTokens)
+	if len(h.beforeTokens) > 0 {
+		tokens := body.GetAttribute(name).BuildTokens(h.beforeTokens)
+		body.RemoveAttribute(name)
+		body.AppendUnstructuredTokens(tokens)
+	}
 	return nil
 }
 
