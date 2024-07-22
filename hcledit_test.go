@@ -120,6 +120,23 @@ object = {
 `,
 		},
 
+		"AttributeWithCommaInObject": {
+			input: `
+object = {
+  attribute2 = "C"
+}
+`,
+			query: "object|attribute3.value",
+			opts:  []hcledit.Option{hcledit.WithQuerySeparator("|")},
+			value: "D",
+			want: `
+object = {
+  attribute2       = "C"
+  attribute3.value = "D"
+}
+`,
+		},
+
 		"Block": {
 			input: `
 `,
