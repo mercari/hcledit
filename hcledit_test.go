@@ -178,6 +178,26 @@ object1 = {
 }
 `,
 		},
+
+		"Raw with Comment": {
+			input: `
+`,
+			query: "object1",
+			opts:  []hcledit.Option{hcledit.WithComment("# test comment for raw")},
+			value: hcledit.RawVal(`{
+  object2 = {
+    attribute1 = "str1"
+  }
+}`),
+			want: `
+# test comment for raw
+object1 = {
+  object2 = {
+    attribute1 = "str1"
+  }
+}
+`,
+		},
 	}
 
 	for name, tc := range cases {

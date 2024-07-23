@@ -20,7 +20,7 @@ func New(input interface{}, comment, afterKey string, beforeNewline bool) (Handl
 	case *BlockVal:
 		return newBlockHandler(v.Labels, comment)
 	case *RawVal:
-		return newRawHandler(v.RawString)
+		return newRawHandler(v.RawString, comment, beforeNewline)
 	}
 
 	ctyType, err := gocty.ImpliedType(input)
