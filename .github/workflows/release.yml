@@ -7,6 +7,12 @@ on:
 
 jobs:
   goreleaser:
+
+    # These permissions are needed for Goreleaser to push a branch and open a
+    # PR to update the tap.
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
