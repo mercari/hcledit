@@ -14,27 +14,32 @@ type BlockVal struct {
 }
 
 type blockHandler struct {
-	labels  []string
-	comment string
+	labels        []string
+	comment       string
+	beforeNewLine bool
 }
 
-func newBlockHandler(labels []string, comment string) (Handler, error) {
+func newBlockHandler(labels []string, comment string, beforeNewLine bool) (Handler, error) {
 	return &blockHandler{
-		labels:  labels,
-		comment: comment,
+		labels:        labels,
+		comment:       comment,
+		beforeNewLine: beforeNewLine,
 	}, nil
 }
 
 func (h *blockHandler) HandleBody(body *hclwrite.Body, name string, _ []string) error {
 	if h.comment != "" {
+		// Note: intuitively, adding a new line should be determined by `h.beforeNewLine`.
+		// However, for the backward compatibility, we add a new line whenever comment is set to a non empty string.
 		body.AppendUnstructuredTokens(
 			beforeTokens(
 				fmt.Sprintf("// %s", strings.TrimSpace(strings.TrimPrefix(h.comment, "//"))),
 				true,
 			),
 		)
+	} else {
+		body.AppendUnstructuredTokens(beforeTokens(h.comment, h.beforeNewLine))
 	}
-
 	body.AppendNewBlock(name, h.labels)
 	return nil
 }

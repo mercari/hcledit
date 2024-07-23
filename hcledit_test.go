@@ -177,6 +177,19 @@ block "label1" "label2" {
 `,
 		},
 
+		"Block with new line": {
+			input: `
+`,
+			query: "block",
+			opts:  []hcledit.Option{hcledit.WithNewLine()},
+			value: hcledit.BlockVal("label1", "label2"),
+			want: `
+
+block "label1" "label2" {
+}
+`,
+		},
+
 		"Raw": {
 			input: `
 `,
