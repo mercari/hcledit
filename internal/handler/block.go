@@ -30,7 +30,7 @@ func newBlockHandler(labels []string, comment string, beforeNewLine bool) (Handl
 func (h *blockHandler) HandleBody(body *hclwrite.Body, name string, _ []string) error {
 	if h.comment != "" {
 		// Note: intuitively, adding a new line should be determined by `h.beforeNewLine`.
-		// However, in order to archive the backward compatibility, we add a new line whenever comment is set to a non empty string.
+		// However, for the backward compatibility, we add a new line whenever comment is set to a non empty string.
 		body.AppendUnstructuredTokens(
 			beforeTokens(
 				fmt.Sprintf("// %s", strings.TrimSpace(strings.TrimPrefix(h.comment, "//"))),
