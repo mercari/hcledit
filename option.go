@@ -5,6 +5,7 @@ type option struct {
 	afterKey                string
 	beforeNewline           bool
 	readFallbackToRawString bool
+	querySeparator          rune
 }
 
 // Option configures specific behavior for specific HCLEditor operations.
@@ -38,5 +39,12 @@ func WithNewLine() Option {
 func WithReadFallbackToRawString() Option {
 	return func(opt *option) {
 		opt.readFallbackToRawString = true
+	}
+}
+
+// This sets a separator for queryStr in HCLEditor funcs. The default separator is ".".
+func WithQuerySeparator(r rune) Option {
+	return func(opt *option) {
+		opt.querySeparator = r
 	}
 }

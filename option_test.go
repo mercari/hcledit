@@ -239,6 +239,21 @@ object = {
 }
 `,
 		},
+
+		"CreateWithQuerySeparator": {
+			input: `
+object = {
+}
+`,
+			exec: func(editor *hcledit.HCLEditor) error {
+				return editor.Create("object/attribute", "str", hcledit.WithQuerySeparator('/'))
+			},
+			want: `
+object = {
+  attribute = "str"
+}
+`,
+		},
 	}
 
 	for name, tc := range cases {

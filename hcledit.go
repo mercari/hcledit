@@ -48,12 +48,14 @@ func RawVal(rawString string) *handler.RawVal {
 func (h *HCLEditor) Create(queryStr string, value interface{}, opts ...Option) error {
 	defer h.reload()
 
-	opt := &option{}
+	opt := &option{
+		querySeparator: '.',
+	}
 	for _, optFunc := range opts {
 		optFunc(opt)
 	}
 
-	queries, err := query.Build(queryStr)
+	queries, err := query.Build(queryStr, opt.querySeparator)
 	if err != nil {
 		return err
 	}
@@ -78,12 +80,14 @@ func (h *HCLEditor) Create(queryStr string, value interface{}, opts ...Option) e
 func (h *HCLEditor) Read(queryStr string, opts ...Option) (map[string]interface{}, error) {
 	defer h.reload()
 
-	opt := &option{}
+	opt := &option{
+		querySeparator: '.',
+	}
 	for _, optFunc := range opts {
 		optFunc(opt)
 	}
 
-	queries, err := query.Build(queryStr)
+	queries, err := query.Build(queryStr, opt.querySeparator)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +126,9 @@ func (h *HCLEditor) Read(queryStr string, opts ...Option) (map[string]interface{
 func (h *HCLEditor) Update(queryStr string, value interface{}, opts ...Option) error {
 	defer h.reload()
 
-	opt := &option{}
+	opt := &option{
+		querySeparator: '.',
+	}
 	for _, optFunc := range opts {
 		optFunc(opt)
 	}
@@ -139,7 +145,7 @@ func (h *HCLEditor) Update(queryStr string, value interface{}, opts ...Option) e
 		return fmt.Errorf("WithNewLine is not supported for Update")
 	}
 
-	queries, err := query.Build(queryStr)
+	queries, err := query.Build(queryStr, opt.querySeparator)
 	if err != nil {
 		return err
 	}
@@ -163,12 +169,14 @@ func (h *HCLEditor) Update(queryStr string, value interface{}, opts ...Option) e
 func (h *HCLEditor) Delete(queryStr string, opts ...Option) error {
 	defer h.reload()
 
-	opt := &option{}
+	opt := &option{
+		querySeparator: '.',
+	}
 	for _, optFunc := range opts {
 		optFunc(opt)
 	}
 
-	queries, err := query.Build(queryStr)
+	queries, err := query.Build(queryStr, opt.querySeparator)
 	if err != nil {
 		return err
 	}
