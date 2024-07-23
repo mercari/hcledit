@@ -30,9 +30,9 @@ func (c *queryWildcard) Key() string {
 	return "*"
 }
 
-func Build(src, querySeparator string) ([]Query, error) {
+func Build(src string, querySeparator rune) ([]Query, error) {
 	var queries []Query
-	for _, q := range strings.Split(src, querySeparator) {
+	for _, q := range strings.Split(src, string([]rune{querySeparator})) {
 		if q == "*" {
 			queries = append(queries, &queryWildcard{})
 		} else {

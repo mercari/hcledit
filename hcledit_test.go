@@ -127,7 +127,7 @@ object = {
 }
 `,
 			query: "object|attribute3.value",
-			opts:  []hcledit.Option{hcledit.WithQuerySeparator("|")},
+			opts:  []hcledit.Option{hcledit.WithQuerySeparator('|')},
 			value: "D",
 			want: `
 object = {

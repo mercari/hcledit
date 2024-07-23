@@ -246,7 +246,7 @@ object = {
 }
 `,
 			exec: func(editor *hcledit.HCLEditor) error {
-				return editor.Create("object/attribute", "str", hcledit.WithQuerySeparator("/"))
+				return editor.Create("object/attribute", "str", hcledit.WithQuerySeparator('/'))
 			},
 			want: `
 object = {

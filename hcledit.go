@@ -49,7 +49,7 @@ func (h *HCLEditor) Create(queryStr string, value interface{}, opts ...Option) e
 	defer h.reload()
 
 	opt := &option{
-		querySeparator: ".",
+		querySeparator: '.',
 	}
 	for _, optFunc := range opts {
 		optFunc(opt)
@@ -81,7 +81,7 @@ func (h *HCLEditor) Read(queryStr string, opts ...Option) (map[string]interface{
 	defer h.reload()
 
 	opt := &option{
-		querySeparator: ".",
+		querySeparator: '.',
 	}
 	for _, optFunc := range opts {
 		optFunc(opt)
@@ -127,7 +127,7 @@ func (h *HCLEditor) Update(queryStr string, value interface{}, opts ...Option) e
 	defer h.reload()
 
 	opt := &option{
-		querySeparator: ".",
+		querySeparator: '.',
 	}
 	for _, optFunc := range opts {
 		optFunc(opt)
@@ -170,7 +170,7 @@ func (h *HCLEditor) Delete(queryStr string, opts ...Option) error {
 	defer h.reload()
 
 	opt := &option{
-		querySeparator: ".",
+		querySeparator: '.',
 	}
 	for _, optFunc := range opts {
 		optFunc(opt)
