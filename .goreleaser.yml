@@ -44,6 +44,10 @@ brews:
       name: hcledit
       pull_request:
         enabled: true
+        base:
+          owner: mercari
+          name: hcledit
+          branch: main
     directory: Formula
     homepage: https://github.com/mercari/hcledit
     description: CLI to edit HCL configurations
