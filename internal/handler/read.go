@@ -36,8 +36,9 @@ func (h *readHandler) HandleBody(body *hclwrite.Body, name string, keyTrail []st
 
 func (h *readHandler) HandleObject(object *ast.Object, name string, keyTrail []string) error {
 	buf := object.GetObjectAttribute(name).BuildTokens().Bytes()
-	value, err := parse(buf, name, h.fallbackToRawString)
-	if err != nil {
+	fallback := h.fallbackToRawString
+	value, err := parse(buf, name, fallback)
+	if err != nil && !fallback {
 		return err
 	}
 	h.results[strings.Join(keyTrail, ".")] = value
