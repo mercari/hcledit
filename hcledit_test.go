@@ -461,6 +461,20 @@ attribute = local.var
 			},
 		},
 
+		"fallback to absolute variable name in object": {
+			input: `
+object = {
+	attribute = local.var
+}
+`,
+			options:   []hcledit.Option{hcledit.WithReadFallbackToRawString()},
+			expectErr: true,
+			query:     "object.attribute",
+			want: map[string]interface{}{
+				"object.attribute": "local.var",
+			},
+		},
+
 		"fallback to uninterpolated string": {
 			input: `
 attribute = "some-${local.var}"
