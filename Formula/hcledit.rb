@@ -5,23 +5,47 @@
 class Hcledit < Formula
   desc "CLI to edit HCL configurations"
   homepage "https://github.com/mercari/hcledit"
-  version "0.0.8"
-  bottle :unneeded
+  version "0.0.17"
 
-  if OS.mac? && Hardware::CPU.intel?
-    url "https://github.com/mercari/hcledit/releases/download/v0.0.8/hcledit_0.0.8_Darwin_x86_64.tar.gz"
-    sha256 "5579be59e4270026394d04ee7707a73e1c033780cac224e6f67ecf2d606a9f20"
-  end
-  if OS.linux? && Hardware::CPU.intel?
-    url "https://github.com/mercari/hcledit/releases/download/v0.0.8/hcledit_0.0.8_Linux_x86_64.tar.gz"
-    sha256 "b5a326659a8e087458812db8c6d4f731073562104c4d3a18f53b75e77aaf2a36"
-  end
-  if OS.linux? && Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-    url "https://github.com/mercari/hcledit/releases/download/v0.0.8/hcledit_0.0.8_Linux_arm64.tar.gz"
-    sha256 "2ccc7f4d11cea0fd3c10b71ecc8c82a0faf184895775875dcf7f61f6092e37f4"
+  on_macos do
+    on_intel do
+      url "https://github.com/mercari/hcledit/releases/download/v0.0.17/hcledit_0.0.17_Darwin_x86_64.tar.gz"
+      sha256 "7034b5dddaf9ba8224848a65d0bb21118d9d79722576c00a7eb292c3d31d21f4"
+
+      def install
+        bin.install "bin/hcledit"
+      end
+    end
+    on_arm do
+      url "https://github.com/mercari/hcledit/releases/download/v0.0.17/hcledit_0.0.17_Darwin_arm64.tar.gz"
+      sha256 "cd255a9d47b24783b0f9bb545e3cc54f8035a7d37eae4649e697b9e70dd367e6"
+
+      def install
+        bin.install "bin/hcledit"
+      end
+    end
   end
 
-  def install
-    bin.install "hcledit"
+  on_linux do
+    on_intel do
+      if Hardware::CPU.is_64_bit?
+        url "https://github.com/mercari/hcledit/releases/download/v0.0.17/hcledit_0.0.17_Linux_x86_64.tar.gz"
+        sha256 "8e3e4dabf2091263c11747f14d17cb7e9216c21f080f60fd61c0499487ff5df2"
+
+        def install
+          bin.install "bin/hcledit"
+        end
+      end
+    end
+    on_arm do
+      if Hardware::CPU.is_64_bit?
+        url "https://github.com/mercari/hcledit/releases/download/v0.0.17/hcledit_0.0.17_Linux_arm64.tar.gz"
+        sha256 "4d8c29629ab14e3a144c4e243db22508c9b8575fa0f40f36acdf63871e0d4440"
+
+        def install
+          bin.install "bin/hcledit"
+        end
+      end
+    end
   end
 end
