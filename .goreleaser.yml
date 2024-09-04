@@ -42,6 +42,7 @@ brews:
   - repository:
       owner: mercari
       name: hcledit
+      branch: update-brew-formula
       pull_request:
         enabled: true
         base:
