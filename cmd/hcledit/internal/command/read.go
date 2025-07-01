@@ -71,7 +71,7 @@ func runRead(opts *ReadOptions, args []string) (string, error) {
 		y, err := yaml.Marshal(results)
 		return string(y), err
 	default:
-		return "", errors.New("invalid output-format")
+		return "", fmt.Errorf("invalid output-format: %s", opts.OutputFormat)
 	}
 }
 

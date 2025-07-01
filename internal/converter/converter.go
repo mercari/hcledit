@@ -1,19 +1,28 @@
 package converter
 
 import (
-	"fmt"
-
 	"github.com/zclconf/go-cty/cty"
-	"github.com/zclconf/go-cty/cty/convert"
 	"github.com/zclconf/go-cty/cty/gocty"
 )
 
 func FromCtyValueToGoValue(ctyVal cty.Value) (interface{}, error) {
-	switch ctyVal.Type() {
-	case cty.Number:
-		var goVal int
+	defer func() {
+		if r := recover(); r != nil {
+			// Return raw string representation if conversion fails
+			ctyVal = cty.StringVal(ctyVal.GoString())
+		}
+	}()
+	if ctyVal.Type() == cty.Number {
+		if ctyVal.RawEquals(cty.NumberIntVal(0)) || ctyVal.RawEquals(cty.NumberIntVal(1)) {
+			var goVal int
+			err := gocty.FromCtyValue(ctyVal, &goVal)
+			return goVal, err
+		}
+		var goVal float64
 		err := gocty.FromCtyValue(ctyVal, &goVal)
 		return goVal, err
+	}
+	switch ctyVal.Type() {
 	case cty.String:
 		var goVal string
 		err := gocty.FromCtyValue(ctyVal, &goVal)
@@ -22,52 +31,97 @@ func FromCtyValueToGoValue(ctyVal cty.Value) (interface{}, error) {
 		var goVal bool
 		err := gocty.FromCtyValue(ctyVal, &goVal)
 		return goVal, err
+	default:
+		if ctyVal.Type().IsListType() || ctyVal.Type().IsTupleType() {
+			return convertSpecificList(ctyVal)
+		} else if ctyVal.Type().IsMapType() {
+			return convertMap(ctyVal)
+		} else if ctyVal.Type().IsObjectType() {
+			return convertObject(ctyVal)
+		}
+		return ctyVal.GoString(), nil
 	}
+}
 
-	{
-		var goVal []int
-		convTy, err := gocty.ImpliedType(goVal)
+func convertSpecificList(ctyVal cty.Value) (interface{}, error) {
+	if !ctyVal.IsKnown() || ctyVal.IsNull() {
+		return nil, nil
+	}
+	var result []interface{}
+	for _, elem := range ctyVal.AsValueSlice() {
+		converted, err := FromCtyValueToGoValue(elem)
 		if err != nil {
-			panic(fmt.Sprintf("Should not be reached here: %s", err))
+			return nil, err
 		}
-
-		srcVal, err := convert.Convert(ctyVal, convTy)
-		if err == nil {
-			if err := gocty.FromCtyValue(srcVal, &goVal); err == nil {
-				return goVal, nil
-			}
-		}
+		result = append(result, converted)
 	}
 
-	{
-		var goVal []bool
-		convTy, err := gocty.ImpliedType(goVal)
+	// Determine specific type of list
+	if len(result) > 0 {
+		switch result[0].(type) {
+		case bool:
+			boolList := make([]bool, len(result))
+			for i, v := range result {
+				boolList[i] = v.(bool)
+			}
+			return boolList, nil
+		case string:
+			stringList := make([]string, len(result))
+			for i, v := range result {
+				stringList[i] = v.(string)
+			}
+			return stringList, nil
+		case float64:
+			floatList := make([]float64, len(result))
+			for i, v := range result {
+				floatList[i] = v.(float64)
+			}
+			return floatList, nil
+		case int:
+			intList := make([]int, len(result))
+			for i, v := range result {
+				if f, ok := v.(float64); ok {
+					intList[i] = int(f)
+				} else {
+					intList[i] = v.(int)
+				}
+			}
+			return intList, nil
+		}
+	}
+	return result, nil
+}
+
+func convertList(ctyVal cty.Value) ([]interface{}, error) {
+	if !ctyVal.IsKnown() || ctyVal.IsNull() {
+		return nil, nil
+	}
+	var result []interface{}
+	for _, elem := range ctyVal.AsValueSlice() {
+		converted, err := FromCtyValueToGoValue(elem)
 		if err != nil {
-			panic(fmt.Sprintf("Should not be reached here: %s", err))
+			return nil, err
 		}
-
-		srcVal, err := convert.Convert(ctyVal, convTy)
-		if err == nil {
-			if err := gocty.FromCtyValue(srcVal, &goVal); err == nil {
-				return goVal, nil
-			}
-		}
+		result = append(result, converted)
 	}
+	return result, nil
+}
 
-	{
-		var goVal []string
-		convTy, err := gocty.ImpliedType(goVal)
+func convertMap(ctyVal cty.Value) (map[string]interface{}, error) {
+	if !ctyVal.IsKnown() || ctyVal.IsNull() {
+		return nil, nil
+	}
+	result := make(map[string]interface{})
+	for key, value := range ctyVal.AsValueMap() {
+		converted, err := FromCtyValueToGoValue(value)
 		if err != nil {
-			panic(fmt.Sprintf("Should not be reached here: %s", err))
+			return nil, err
 		}
-
-		srcVal, err := convert.Convert(ctyVal, convTy)
-		if err == nil {
-			if err := gocty.FromCtyValue(srcVal, &goVal); err == nil {
-				return goVal, nil
-			}
-		}
+		result[key] = converted
 	}
+	return result, nil
+}
 
-	return nil, fmt.Errorf("unsupported cty type")
+func convertObject(ctyVal cty.Value) (map[string]interface{}, error) {
+	return convertMap(ctyVal)
 }

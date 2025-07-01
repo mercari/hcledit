@@ -2,7 +2,6 @@ package hcledit
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -42,7 +41,7 @@ func ReadFile(path string) (*HCLEditor, error) {
 
 // Read reads HCL file from the given io.Reader and returns operation interface for it.
 func Read(r io.Reader, filename string) (*HCLEditor, error) {
-	buf, err := ioutil.ReadAll(r)
+	buf, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}

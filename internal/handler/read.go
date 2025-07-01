@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/hashicorp/hcl/v2"
@@ -24,7 +25,12 @@ func NewReadHandler(results map[string]cty.Value, fallbackToRawString bool) (Han
 }
 
 func (h *readHandler) HandleBody(body *hclwrite.Body, name string, keyTrail []string) error {
-	buf := body.GetAttribute(name).BuildTokens(nil).Bytes()
+	attr := body.GetAttribute(name)
+	if attr == nil {
+		return fmt.Errorf("attribute %s not found", name)
+	}
+
+	buf := attr.BuildTokens(nil).Bytes()
 	fallback := h.fallbackToRawString
 	value, err := parse(buf, name, fallback)
 	if err != nil && !fallback {
@@ -35,7 +41,12 @@ func (h *readHandler) HandleBody(body *hclwrite.Body, name string, keyTrail []st
 }
 
 func (h *readHandler) HandleObject(object *ast.Object, name string, keyTrail []string) error {
-	buf := object.GetObjectAttribute(name).BuildTokens().Bytes()
+	attr := object.GetObjectAttribute(name)
+	if attr == nil {
+		return fmt.Errorf("attribute %s not found", name)
+	}
+
+	buf := attr.BuildTokens().Bytes()
 	fallback := h.fallbackToRawString
 	value, err := parse(buf, name, fallback)
 	if err != nil && !fallback {
@@ -52,16 +63,21 @@ func parse(buf []byte, name string, fallback bool) (cty.Value, error) {
 	}
 
 	body := file.Body.(*hclsyntax.Body)
-	expr := body.Attributes[name].Expr
-	v, diags := expr.Value(nil)
+	attr, ok := body.Attributes[name]
+	if !ok {
+		return cty.Value{}, fmt.Errorf("attribute %s not found", name)
+	}
+
+	v, diags := attr.Expr.Value(nil)
 	if diags.HasErrors() {
 		if !fallback {
 			return cty.Value{}, diags
 		}
 
-		// Could not parse the value with a nil EvalContext, so this is likely an
-		// interpolated string. Instead, attempt to parse the raw string value.
-		return cty.StringVal(string(expr.Range().SliceBytes(buf))), diags
+		// Fallback: Return raw string representation of the object
+		rawValue := string(attr.Expr.Range().SliceBytes(buf))
+		return cty.StringVal(rawValue), nil
 	}
+
 	return v, nil
 }
